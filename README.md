@@ -6,8 +6,11 @@ Bootstrap for Rapid Inference on Spatial Covariances. The codes of package "libl
 In order to use the package follow these steps:
 
 library(devtools) #If "devtools" is not installed, install "devtools" from CRAN before this step
+
 install_github("ArkajyotiSaha/BRISC")
+
 library(BRISC)
+
 
 ##For help on the function brisc please use the following:
 
