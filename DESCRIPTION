@@ -1,6 +1,6 @@
 Package: BRISC
 Type: Package
-Title: Bootstrap of Spatially Correlated Observations
+Title: Bootstrap for Rapid Inference on Spatial Covariances
 Version: 0.1.0
 Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="asaha8@jhmi.edu"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"))
 Maintainer: Arkajyoti Saha <asaha8@jhmi.edu>
