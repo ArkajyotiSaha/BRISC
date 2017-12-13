@@ -1,0 +1,4 @@
+useDynLib(BRISC, .registration=TRUE)
+
+export(brisc)
+
