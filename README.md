@@ -1,6 +1,5 @@
 # BRISC
-Bootstrap for Rapid Inference on Spatial Covariances. The codes of package "liblbfgs (Naoaki Okazaki)" are also available here for user convenience. Some code snippets are borrowed from R package "spNNGP (Andrew Finley et al.)". We recommend compiling the code with OpenMP support, though the OpenMP flag is omitted for sake of user convenience.
-
+Bootstrap for Rapid Inference on Spatial Covariances: Provides parameter estimates and bootstrap based confidence intervals for all parameters in a Gaussian Process based spatial regression model.
 
 
 In order to use the package follow these steps:
@@ -15,3 +14,7 @@ library(BRISC)
 ##For help on the function brisc please use the following:
 
 ?brisc
+
+
+
+The codes of package "liblbfgs (Naoaki Okazaki)" are also available here for user convenience. Some code snippets are borrowed from R package "spNNGP (Andrew Finley et al.)". We recommend compiling the code with OpenMP support, though the OpenMP flag is omitted for sake of user convenience.
