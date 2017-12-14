@@ -17,4 +17,4 @@ library(BRISC)
 
 
 
-The codes of package "liblbfgs (Naoaki Okazaki)" are also available here for user convenience. Some code snippets are borrowed from R package "spNNGP (Andrew Finley et al.)". We recommend compiling the code with OpenMP support, though the OpenMP flag is omitted for sake of user convenience.
+PS: The codes of package "liblbfgs (Naoaki Okazaki)" are also available here for user convenience. Some code snippets are borrowed from R package "spNNGP (Andrew Finley et al.)". We recommend compiling the code with OpenMP support, though the OpenMP flag is omitted for sake of user convenience.
