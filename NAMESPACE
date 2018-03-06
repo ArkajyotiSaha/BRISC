@@ -1,4 +1,7 @@
 useDynLib(BRISC, .registration=TRUE)
 
-export(brisc)
+export(BRISC_estimation)
+export(BRISC_bootstrap)
+export(BRISC_prediction)
 
+import(RANN, parallel, stats, rdist, matrixStats)

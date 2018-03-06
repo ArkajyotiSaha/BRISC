@@ -1,13 +1,13 @@
 Package: BRISC
 Type: Package
-Title: Bootstrap for Rapid Inference on Spatial Covariances
+Title: Bootstrap for Rapid Inference on Spatial Covariances (BRISC)
 Version: 0.1.0
 Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="asaha8@jhmi.edu"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"))
 Maintainer: Arkajyoti Saha <asaha8@jhmi.edu>
 Author: Arkajyoti Saha [aut, cre],
  Abhirup Datta [aut]
-Depends: R (>= 2.10), RANN, parallel
-Description: Fits Bootstrap with Gaussian univariate spatial regression models (BRISC) for large datasets using Nearest Neighbor Gaussian Processes (NNGP).
+Depends: R (>= 2.10), RANN, parallel, stats, rdist, matrixStats
+Description: Fits Bootstrap with univariate spatial regression models using BRISC for large datasets using Nearest Neighbor Gaussian Processes (NNGP).
 License: GPL (>= 2)
 Encoding: UTF-8
 NeedsCompilation: yes
