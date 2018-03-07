@@ -453,7 +453,7 @@ extern "C" {
             nTheta = 3;//tau^2 = 0, phi = 1, nu = 2;
         }
 
-        int i_0;
+        int i_0, ret;
         int k_0 = 0;
         lbfgsfloatval_t fx;
         lbfgsfloatval_t *x = lbfgs_malloc(nTheta);
@@ -635,7 +635,7 @@ extern "C" {
 #endif
         }
 
-        int i_0;
+        int i_0, ret;
         int k_0 = 0;
         lbfgsfloatval_t fx;
         lbfgsfloatval_t *x = lbfgs_malloc(nTheta);
