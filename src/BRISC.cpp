@@ -453,7 +453,7 @@ extern "C" {
             nTheta = 3;//tau^2 = 0, phi = 1, nu = 2;
         }
 
-        int i_0, ret;
+        int i_0, ret = 0;
         int k_0 = 0;
         lbfgsfloatval_t fx;
         lbfgsfloatval_t *x = lbfgs_malloc(nTheta);
@@ -539,7 +539,6 @@ extern "C" {
 
 #ifdef _OPENMP
         omp_set_num_threads(nThreads_nngp);
-         printf("We have Open MP!\n");
 #else
         if(nThreads_nngp > 1){
             warning("n.omp.threads > %i, but source not compiled with OpenMP support.", nThreads_nngp);
@@ -635,7 +634,7 @@ extern "C" {
 #endif
         }
 
-        int i_0, ret;
+        int i_0, ret = 0;
         int k_0 = 0;
         lbfgsfloatval_t fx;
         lbfgsfloatval_t *x = lbfgs_malloc(nTheta);
