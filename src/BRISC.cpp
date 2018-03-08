@@ -539,7 +539,7 @@ extern "C" {
 
 #ifdef _OPENMP
         omp_set_num_threads(nThreads_nngp);
-         printf("We have Open MP!\n")
+         printf("We have Open MP!\n");
 #else
         if(nThreads_nngp > 1){
             warning("n.omp.threads > %i, but source not compiled with OpenMP support.", nThreads_nngp);
