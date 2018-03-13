@@ -80,7 +80,7 @@ BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "I
   result_list$boot.Theta <- result_table[,(length(BRISC_Out$Beta) + 1):dim(result_table)[2]]
   if (cov.model != "matern") {colnames(result_list$boot.Theta) <- c("sigma.sq", "tau.sq", "phi")}
   if (cov.model == "matern") {colnames(result_list$boot.Theta) <- c("sigma.sq", "tau.sq", "phi", "nu")}
-  result_list$boot.Beta <- result_table[,1:length(BRISC_Out$Beta)]
+  result_list$boot.Beta <- as.matrix(result_table[,1:length(BRISC_Out$Beta)])
   colnames(result_list$boot.Beta) <- rep(0, length(BRISC_Out$Beta))
   for(i in 1:length(BRISC_Out$Beta)){
     name_beta <- paste0("beta_",i)
