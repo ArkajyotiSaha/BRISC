@@ -86,7 +86,8 @@ BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "I
     name_beta <- paste0("beta_",i)
     colnames(result_list$boot.Beta)[i] <- name_beta
   }
-  result_list$confidence.interval <- result_CI
+  result_list$confidence.interval <- cbind(result_CI[,1:length(BRISC_Out$Beta)],pmax(result_CI[,(length(BRISC_Out$Beta) + 1)
+                                     :dim(result_table)[2]], 0*result_CI[,(length(BRISC_Out$Beta) + 1):dim(result_table)[2]]))
   if (cov.model != "matern")  {colnames(result_list$confidence.interval)[(length(BRISC_Out$Beta) + 1):dim(result_table)[2]] <-
     c("sigma.sq", "tau.sq", "phi")}
   if (cov.model == "matern")  {colnames(result_list$confidence.interval)[(length(BRISC_Out$Beta) + 1):dim(result_table)[2]] <-
