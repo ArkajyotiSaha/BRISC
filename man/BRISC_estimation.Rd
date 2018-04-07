@@ -8,7 +8,7 @@
 }
 
 \usage{
-BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1, order = "MMD", cov.model = "exponential", search.type = "tree", verbose = FALSE, eps = 2e-05)
+BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1, order = "AMMD", cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05)
 }
 
 \arguments{
@@ -32,7 +32,7 @@ BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. Default is 1. }
 
-  \item{order}{Keyword that specifies the ordering scheme to be used in ordering the observations. Supported keywords are: "MMD" and "Sum_coords" for approximate Maximum Minimum Distance and sum of coordinate based ordering, respectively. Default value is "MMD". }
+  \item{order}{Keyword that specifies the ordering scheme to be used in ordering the observations. Supported keywords are: "AMMD" and "Sum_coords" for approximate Maximum Minimum Distance and sum of coordinate based ordering, respectively. Default value is "MMD". }
 
   \item{cov.model}{Keyword that specifies the covariance function to be used in modelling the spatial dependence structure among the observations. Supported keywords are: "exponential", "matern", "spherical", and "gaussian" for exponential, matern, spherical and gaussian covariance function respectively. Default value is "exponential". }
 
