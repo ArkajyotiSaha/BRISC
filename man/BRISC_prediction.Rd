@@ -3,7 +3,8 @@
 \title{Function for performing prediction with BRISC}
 
 \description{
-  The function \code{BRISC_prediction} performs prediction on a set of new locations with univariate spatial regression models using outputs of \code{BRISC_estimation}.
+  The function \code{BRISC_prediction} performs prediction on a set of new locations with univariate spatial regression 
+  models using outputs of \code{BRISC_estimation}.
 }
 
 \usage{
@@ -14,13 +15,17 @@ BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
 
   \item{BRISC_Out}{an object of class "BRISC_Out", obtained as an output of \code{BRISC_estimation}. }
 
-  \item{X.0}{the covariates for prediction locations. Its Structure should be identical (including intercept) with that of covariates provided for estimation purpose in \code{BRISC_estimation}. }
+  \item{X.0}{the covariates for prediction locations. Its Structure should be identical (including intercept) with that of 
+             covariates provided for estimation purpose in \code{BRISC_estimation}. }
 
-  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its caleshould be same as that of coords in \code{BRISC_estimation}. }
+  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its caleshould be same as that of coords 
+                  in \code{BRISC_estimation}. }
 
-  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. Default is 1. }
+  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. 
+               Default is 1. }
 
-  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
+  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the 
+                 algorithm is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 
 }
 
@@ -31,7 +36,8 @@ BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
 
   \item{prediction.ci}{confidence intervals corresponding to the predictions. }
 
-   \item{prediction.time}{time (in seconds) required to perform the prediction after preprocessing data in R, reported using \code{proc.time()}. }
+   \item{prediction.time}{time (in seconds) required to perform the prediction after preprocessing data in R, reported using 
+                          \code{proc.time()}. }
 }
 
 
