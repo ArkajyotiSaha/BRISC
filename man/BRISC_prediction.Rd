@@ -7,7 +7,7 @@
 }
 
 \usage{
-BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = FALSE)
+BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
 }
 
 \arguments{
