@@ -11,7 +11,9 @@ BRISC_estimation <- function(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, 
   if(order != "AMMD" && order != "Sum_coords"){
     stop("error: Please insert a valid ordering scheme choice given by 1 or 2.")
   }
-  cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tOrdering Coordinates"), collapse="   "), "\n")
+  if(verbose == TRUE){
+    cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tOrdering Coordinates"), collapse="   "), "\n")
+    }
   if(order == "AMMD"){ord <- orderMaxMinLocal(coords)}
   if(order == "Sum_coords"){ord <- order(coords[,1] + coords[,2])}
   coords <- coords[ord,]
