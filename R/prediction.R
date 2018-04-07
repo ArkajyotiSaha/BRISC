@@ -35,6 +35,9 @@ BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = FALS
   q <- nrow(X.0)
   
   ##get nn indx
+  if(verbose == TRUE){
+    cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tGetting Nearest neighbors for prediction locations"), collapse="   "), "\n")
+    }
   nn.indx.0 <- nn2(coords, coords.0, k=n.neighbors)$nn.idx-1
   
   storage.mode(X) <- "double"
