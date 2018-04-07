@@ -4,4 +4,4 @@ export(BRISC_estimation)
 export(BRISC_bootstrap)
 export(BRISC_prediction)
 
-import(RANN, parallel, stats, rdist, matrixStats)
+import(RANN, parallel, stats, rdist, matrixStats, pbapply)
