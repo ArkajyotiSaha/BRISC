@@ -8,7 +8,7 @@
 }
 
 \usage{
-BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial")
+BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial", verbose = TRUE)
 }
 
 \arguments{
@@ -21,9 +21,9 @@ BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial")
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. Default is 1. }
 
-
   \item{init}{Keyword that specifies initialization scheme to be used. Supported keywords are: "Initial" and "Estimate" for initialization of parameter values for bootstrap samples with initial values used in \code{BRISC_estimate} and estimated values of parameters in \code{BRISC_estimate} respectively. }
 
+  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 }
 
 \value{
