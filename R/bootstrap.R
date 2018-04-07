@@ -55,7 +55,8 @@ BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "I
                                    "CIndx", "n", "p", "n.neighbors", "theta_boot_init", "cov.model.indx", "Length.D",
                                    "n.omp.threads", "bootstrap_brisc", "eps"),envir=environment())
     if(verbose == TRUE){
-      pboptions(type = "txt", char = "=", txt.width = n_boot)
+      cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tBootstrap Progress"), collapse="   "), "\n"); cat(paste(("----------------------------------------"), collapse="   "), "\n")
+      pboptions(type = "txt", char = "=")
       result <- pblapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
                                             cov.model.indx, Length.D, n.omp.threads, eps, cl = cl)
       }
@@ -65,7 +66,8 @@ BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "I
   }
   if(h == 1){
     if(verbose == TRUE){
-      pboptions(type = "txt", char = "=", txt.width = n_boot)
+      cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tBootstrap Progress"), collapse="   "), "\n"); cat(paste(("----------------------------------------"), collapse="   "), "\n")
+      pboptions(type = "txt", char = "=")
       result <- pblapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
                        cov.model.indx, Length.D, n.omp.threads, eps)
     }
