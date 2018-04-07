@@ -8,7 +8,8 @@
 }
 
 \usage{
-BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1, order = "AMMD", cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05)
+BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1, order = "AMMD", 
+                 cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05)
 }
 
 \arguments{
@@ -30,15 +31,23 @@ BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.
 
   \item{n.neighbors}{number of neighbors used in the NNGP. Default value is 15. }
 
-  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. Default is 1. }
+  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. 
+               Default is 1. }
 
-  \item{order}{Keyword that specifies the ordering scheme to be used in ordering the observations. Supported keywords are: "AMMD" and "Sum_coords" for approximate Maximum Minimum Distance and sum of coordinate based ordering, respectively. Default value is "MMD". }
+  \item{order}{Keyword that specifies the ordering scheme to be used in ordering the observations. Supported keywords are: 
+               "AMMD" and "Sum_coords" for approximate Maximum Minimum Distance and sum of coordinate based ordering, 
+               respectively. Default value is "AMMD". }
 
-  \item{cov.model}{Keyword that specifies the covariance function to be used in modelling the spatial dependence structure among the observations. Supported keywords are: "exponential", "matern", "spherical", and "gaussian" for exponential, matern, spherical and gaussian covariance function respectively. Default value is "exponential". }
+  \item{cov.model}{Keyword that specifies the covariance function to be used in modelling the spatial dependence structure 
+                   among the observations. Supported keywords are: "exponential", "matern", "spherical", and "gaussian" 
+                   for exponential, matern, spherical and gaussian covariance function respectively. Default value is "exponential". }
 
-  \item{search.type}{Keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are: "tree" and "brute". Both of them provide the same result, though "tree" should be faster. Default value is "tree". }
+  \item{search.type}{Keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are: 
+                     "tree" and "brute". Both of them provide the same result, though "tree" should be faster. 
+                     Default value is "tree". }
 
-  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
+  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm 
+                 is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 
   \item{eps}{The tolerance to be used in centred finite difference approximation of derivatives. Default value is 2e-05. }
 }
@@ -67,7 +76,8 @@ BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.
 
   \item{Theta}{estimate of parameters of covarinace model. }
 
-   \item{estimation.time}{time (in seconds) required to perform the model fitting after ordering and preprocessing data in R, reported using \code{proc.time()}. }
+   \item{estimation.time}{time (in seconds) required to perform the model fitting after ordering and preprocessing data in R, 
+                          reported using \code{proc.time()}. }
 
   \item{BRISC_Object}{Object required for bootstrap and prediction. }
 
