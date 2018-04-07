@@ -1,4 +1,4 @@
-BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial"){
+BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial", verbose = TRUE){
 
   if(missing(BRISC_Out)){stop("error: BRISC_bootstrap expects BRISC_Out\n")}
 
@@ -54,13 +54,26 @@ BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "I
     clusterExport(cl=cl, varlist=c("norm.residual", "X", "B", "F", "Xbeta", "D", "d", "nnIndx", "nnIndxLU",
                                    "CIndx", "n", "p", "n.neighbors", "theta_boot_init", "cov.model.indx", "Length.D",
                                    "n.omp.threads", "bootstrap_brisc", "eps"),envir=environment())
-    result <- parLapply(cl,1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
-                        cov.model.indx, Length.D, n.omp.threads, eps)
+    if(verbose == TRUE){
+      pboptions(type = "txt", char = "=", txt.width = n_boot)
+      result <- pblapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
+                                            cov.model.indx, Length.D, n.omp.threads, eps, cl = cl)
+      }
+    if(verbose != TRUE){result <- parLapply(cl,1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
+                                            cov.model.indx, Length.D, n.omp.threads, eps)}
     stopCluster(cl)
   }
   if(h == 1){
-    result <- lapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
-                     cov.model.indx, Length.D, n.omp.threads, eps)
+    if(verbose == TRUE){
+      pboptions(type = "txt", char = "=", txt.width = n_boot)
+      result <- pblapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
+                       cov.model.indx, Length.D, n.omp.threads, eps)
+    }
+    
+    if(verbose != TRUE){
+      result <- lapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
+                       cov.model.indx, Length.D, n.omp.threads, eps)
+    }
   }
 
   p4 <- proc.time()
