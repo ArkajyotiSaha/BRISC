@@ -8,8 +8,10 @@
 }
 
 \usage{
-BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1, order = "AMMD", 
-                 cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05)
+BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1,
+                 nu = 0.5, n.neighbors = 15, n_omp = 1, order = "AMMD",
+                 cov.model = "exponential", search.type = "tree",
+                 verbose = TRUE, eps = 2e-05)
 }
 
 \arguments{
