@@ -80,7 +80,7 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
 estimation_result <- BRISC_estimation(coords, x, y)
-bootstrap_result <- BRISC_bootstrap(estimation_result, n_boot = 10)
+bootstrap_result <- BRISC_bootstrap(estimation_result, n_boot = 4)
 
 }
 
