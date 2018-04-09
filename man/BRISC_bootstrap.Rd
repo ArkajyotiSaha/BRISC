@@ -8,7 +8,8 @@
 }
 
 \usage{
-BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial", verbose = TRUE)
+BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
+                init = "Initial", verbose = TRUE)
 }
 
 \arguments{
