@@ -414,7 +414,7 @@ extern "C" {
     }
 
 
-    SEXP BRISC_bootstrap(SEXP X_r, SEXP B_r, SEXP F_r, SEXP Xbeta_r, SEXP norm_residual_boot_r, SEXP D_r, SEXP d_r, SEXP nnIndx_r, SEXP nnIndxLU_r, SEXP CIndx_r, SEXP n_r, SEXP p_r, SEXP m_r, SEXP theta_r, SEXP covModel_r, SEXP j_r, SEXP nThreads_r, SEXP eps_r){
+    SEXP BRISC_bootstrapcpp(SEXP X_r, SEXP B_r, SEXP F_r, SEXP Xbeta_r, SEXP norm_residual_boot_r, SEXP D_r, SEXP d_r, SEXP nnIndx_r, SEXP nnIndxLU_r, SEXP CIndx_r, SEXP n_r, SEXP p_r, SEXP m_r, SEXP theta_r, SEXP covModel_r, SEXP j_r, SEXP nThreads_r, SEXP eps_r){
 
         const int inc = 1;
         const double one = 1.0;
@@ -515,7 +515,7 @@ extern "C" {
 
 
 
-    SEXP BRISC_estimate(SEXP y_r, SEXP X_r, SEXP p_r, SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP alphaSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
+    SEXP BRISC_estimatecpp(SEXP y_r, SEXP X_r, SEXP p_r, SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP alphaSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                    SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP eps_r){
 
         int i, k, l, nProtect=0;

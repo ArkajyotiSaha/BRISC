@@ -1,15 +1,15 @@
 BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE){
-  
-  
+
+
   if(missing(BRISC_Out)){stop("error: BRISC_bootstrap expects BRISC_Out\n")}
-  
-  
+
+
   X <- BRISC_Out$X
   y <- BRISC_Out$y
   n.neighbors <- BRISC_Out$n.neighbors
   coords <- BRISC_Out$coords
-  
-  
+
+
   n.omp.threads <- as.integer(n_omp)
   n <- nrow(X)
   p <- ncol(X)
@@ -17,29 +17,29 @@ BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE
   dim(Theta) <- c(length(BRISC_Out$Theta),1)
   Beta <- as.matrix(BRISC_Out$Beta)
   dim(Beta) <- c(length(BRISC_Out$Beta),1)
-  
+
   cov.model <- BRISC_Out$cov.model
   cov.model.names <- c("exponential","spherical","matern","gaussian")
   cov.model.indx <- which(cov.model == cov.model.names) - 1
-  
-  
+
+
   ##check X.0 and coords.0
   if(missing(X.0)){stop("error: X.0 must be specified\n")}
   if(!any(is.data.frame(X.0), is.matrix(X.0))){stop("error: X.0 must be a data.frame or matrix\n")}
   if(ncol(X.0) != ncol(X)){ stop(paste("error: X.0 must have ",p," columns\n"))}
-  
+
   if(missing(coords.0)){stop("error: coords.0 must be specified\n")}
   if(!any(is.data.frame(coords.0), is.matrix(coords.0))){stop("error: coords.0 must be a data.frame or matrix\n")}
   if(!ncol(coords.0) == 2){stop("error: coords.0 must have two columns\n")}
-  
+
   q <- nrow(X.0)
-  
+
   ##get nn indx
   if(verbose == TRUE){
     cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tGetting nearest neighbors\n\tfor prediction locations"), collapse="   "), "\n")
     }
   nn.indx.0 <- nn2(coords, coords.0, k=n.neighbors)$nn.idx-1
-  
+
   storage.mode(X) <- "double"
   storage.mode(y) <- "double"
   storage.mode(coords) <- "double"
@@ -55,22 +55,22 @@ BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE
   storage.mode(nn.indx.0) <- "integer"
   storage.mode(n.omp.threads) <- "integer"
   storage.mode(verbose) <- "integer"
-  
+
   p5 <- proc.time()
-  
-  out <- .Call("BRISC_prediction", X, y, coords, n, p, n.neighbors, X.0, coords.0, q, nn.indx.0,
+
+  out <- .Call("BRISC_predictioncpp", X, y, coords, n, p, n.neighbors, X.0, coords.0, q, nn.indx.0,
                Beta, Theta, cov.model.indx, n.omp.threads, verbose)
   p6 <- proc.time()
-  
+
   output <- list()
   output$prediction <- out$p.y.0[,1]
-  
-  
+
+
   result_new <- matrix(0,length(output$prediction),2)
   for(i in 1:length(result_new[,1])){
     result_new[i,] <- c(out$p.y.0[,1][i] - 1.96 * out$var.y.0[,1][i], out$p.y.0[,1][i] + 1.96 * out$var.y.0[,1][i])
   }
-  
+
   output$prediction.ci <- result_new
   output$prediction.time <- p6 - p5
   output
