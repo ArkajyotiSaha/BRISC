@@ -4,8 +4,8 @@ Bootstrap for Rapid Inference on Spatial Covariances: Provides parameter estimat
 
 In order to download the package, please run the following command in R:
 
-if (!require("devtools"))
-  install.packages("devtools")
+if (!require("devtools")) install.packages("devtools")
+
 devtools::install_github("ArkajyotiSaha/BRISC")
 
 
