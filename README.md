@@ -32,5 +32,7 @@ The code of package "liblbfgs (Naoaki Okazaki)" are also available here for user
 
 2. Datta, A., Banerjee, S., Finley, A. O., & Gelfand, A. E. (2016). Hierarchical nearest-neighbor Gaussian process models for large geostatistical datasets. Journal of the American Statistical Association, 111(514), 800-812.
 
-3. Guinness, J. (2018). Permutation and Grouping Methods for Sharpening Gaussian Process Approximations. Technometrics, (just-accepted).
+3. Guinness, J. (2018). Permutation and Grouping Methods for Sharpening Gaussian Process Approximations. Technometrics, (accepted).
+
+4. Saha, A. and Datta, A. (2018) BRISC: bootstrap for rapid inference on spatial covariances. STAT, (accepted).
 
