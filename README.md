@@ -27,6 +27,12 @@ For help on the functions in Brisc please use the following:
 The code of package "liblbfgs (Naoaki Okazaki)" are also available here for user convenience. Some code snippets are borrowed from R package "spNNGP (Andrew Finley et al.)". The code for approximate MMD ordering is borrowed from https://github.com/joeguinness/gp_reorder after minor modifications. The code for configure.ac is borrowed from https://github.com/cran/ARTP2/blob/master/configure.ac with minor adaptations. The code for covariance models other than exponential model are in beta testing stage.
 
 
+## Citation
+Please cite the following paper when you use BRISC
+
+Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial covariances. Stat, e184.
+
+
 ## References:
 1. Vecchia, A. V. (1988). Estimation and model identification for continuous spatial processes. Journal of the Royal Statistical Society. Series B (Methodological), 297-312.
 
@@ -34,5 +40,5 @@ The code of package "liblbfgs (Naoaki Okazaki)" are also available here for user
 
 3. Guinness, J. (2018). Permutation and Grouping Methods for Sharpening Gaussian Process Approximations. Technometrics, (accepted).
 
-4. Saha, A. and Datta, A. (2018) BRISC: bootstrap for rapid inference on spatial covariances. STAT, (accepted).
+4. Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial covariances. Stat, e184.
 
