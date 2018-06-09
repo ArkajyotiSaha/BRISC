@@ -30,7 +30,7 @@ The code of package "liblbfgs (Naoaki Okazaki)" are also available here for user
 ## Citation
 Please cite the following paper when you use BRISC
 
-Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial covariances. Stat, e184.
+Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial covariances. Stat, e184, DOI: 10.1002/sta4.184.
 
 
 ## References:
@@ -38,7 +38,7 @@ Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial co
 
 2. Datta, A., Banerjee, S., Finley, A. O., & Gelfand, A. E. (2016). Hierarchical nearest-neighbor Gaussian process models for large geostatistical datasets. Journal of the American Statistical Association, 111(514), 800-812.
 
-3. Guinness, J. (2018). Permutation and Grouping Methods for Sharpening Gaussian Process Approximations. Technometrics, (accepted).
+3. Guinness, J. (2018). Permutation and Grouping Methods for Sharpening Gaussian Process Approximations. Technometrics, DOI: 10.1080/00401706.2018.1437476.
 
-4. Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial covariances. Stat, e184.
+4. Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial covariances. Stat, e184, DOI: 10.1002/sta4.184.
 
