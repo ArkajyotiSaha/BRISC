@@ -4,7 +4,13 @@
 
 \description{
   The function \code{BRISC_bootstrap} performs bootstrap on univariate spatial
-  regression models using outputs of \code{BRISC_estimation}.
+  regression models using outputs of \code{BRISC_estimation}. The optimization
+  is performed with C library of limited-memory BFGS libLBFGS: a library of Limited-memory
+  Broyden-Fletcher-Goldfarb-Shanno (L-BFGS), http://www.chokkan.org/software/liblbfgs/
+  (Naoaki Okazaki). For user convenience the soure codes of the package libLBFGS are
+  provided in the package. Some code blocks are borrowed from the R package: spNNGP:
+  Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes
+  https://CRAN.R-project.org/package=spNNGP .
 }
 
 \usage{
@@ -18,17 +24,17 @@ BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
 
   \item{n_boot}{number of bootstrap samples. Default value is 100. }
 
-  \item{h}{Number of core to be used in parallel computing setup for bootstrap samples. If h = 1, there is no parallelization. 
+  \item{h}{Number of core to be used in parallel computing setup for bootstrap samples. If h = 1, there is no parallelization.
            Default value is 1. }
 
-  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. 
+  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
 
-  \item{init}{Keyword that specifies initialization scheme to be used. Supported keywords are: "Initial" and "Estimate" 
-              for initialization of parameter values for bootstrap samples with initial values used in \code{BRISC_estimate} 
+  \item{init}{Keyword that specifies initialization scheme to be used. Supported keywords are: "Initial" and "Estimate"
+              for initialization of parameter values for bootstrap samples with initial values used in \code{BRISC_estimate}
               and estimated values of parameters in \code{BRISC_estimate} respectively. }
 
-  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm is 
+  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm is
                  printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 }
 
@@ -41,10 +47,31 @@ BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
 
   \item{confidence.interval}{confidence intervals corresponding to the parameters. }
 
-   \item{boot.time}{time (in seconds) required to perform the bootstrapping after preprocessing data in R, reported using 
+   \item{boot.time}{time (in seconds) required to perform the bootstrapping after preprocessing data in R, reported using
                     \code{proc.time()}. }
 }
 
+\references{
+  Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial
+  covariances. Stat, e184, DOI: 10.1002/sta4.184.
+
+  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
+  Hierarchical Nearest-Neighbor Gaussian process models for large
+  geostatistical datasets. Journal of the American Statistical
+  Association, 111:800-812.
+
+  Vecchia, A. V. (1988) Estimation and model identification for
+  continuous spatial processes. Journal of the Royal Statistical
+  Society. Series B (Methodological), 297-312.
+
+  Okazaki N. libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno
+  (L-BFGS), http://www.chokkan.org/software/liblbfgs/ .
+
+  Andrew Finley, Abhirup Datta and Sudipto Banerjee (2017). spNNGP: Spatial Regression Models for Large
+  Datasets using Nearest Neighbor Gaussian Processes. R package version 0.1.1.
+  https://CRAN.R-project.org/package=spNNGP
+
+}
 
 \author{
   Arkajyoti Saha \email{asaha8@jhmi.edu}, \cr
