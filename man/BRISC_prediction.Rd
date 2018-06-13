@@ -3,8 +3,11 @@
 \title{Function for performing prediction with BRISC}
 
 \description{
-  The function \code{BRISC_prediction} performs prediction on a set of new locations with univariate spatial regression 
-  models using outputs of \code{BRISC_estimation}.
+  The function \code{BRISC_prediction} performs prediction on a set of new
+  locations with univariate spatial regression models using outputs of
+  \code{BRISC_estimation}. Some code blocks are borrowed from the R package: spNNGP:
+  Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes
+  https://CRAN.R-project.org/package=spNNGP .
 }
 
 \usage{
@@ -15,16 +18,16 @@ BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
 
   \item{BRISC_Out}{an object of class "BRISC_Out", obtained as an output of \code{BRISC_estimation}. }
 
-  \item{X.0}{the covariates for prediction locations. Its Structure should be identical (including intercept) with that of 
+  \item{X.0}{the covariates for prediction locations. Its Structure should be identical (including intercept) with that of
              covariates provided for estimation purpose in \code{BRISC_estimation}. }
 
-  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its caleshould be same as that of coords 
+  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its caleshould be same as that of coords
                   in \code{BRISC_estimation}. }
 
-  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support. 
+  \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
 
-  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the 
+  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the
                  algorithm is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 
 }
@@ -36,10 +39,28 @@ BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
 
   \item{prediction.ci}{confidence intervals corresponding to the predictions. }
 
-   \item{prediction.time}{time (in seconds) required to perform the prediction after preprocessing data in R, reported using 
+   \item{prediction.time}{time (in seconds) required to perform the prediction after preprocessing data in R, reported using
                           \code{proc.time()}. }
 }
 
+\references{
+  Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial
+  covariances. Stat, e184, DOI: 10.1002/sta4.184.
+
+  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
+  Hierarchical Nearest-Neighbor Gaussian process models for large
+  geostatistical datasets. Journal of the American Statistical
+  Association, 111:800-812.
+
+  Vecchia, A. V. (1988) Estimation and model identification for
+  continuous spatial processes. Journal of the Royal Statistical
+  Society. Series B (Methodological), 297-312.
+
+  Andrew Finley, Abhirup Datta and Sudipto Banerjee (2017). spNNGP: Spatial Regression Models for Large
+  Datasets using Nearest Neighbor Gaussian Processes. R package version 0.1.1.
+  https://CRAN.R-project.org/package=spNNGP
+
+}
 
 \author{
   Arkajyoti Saha \email{asaha8@jhmi.edu}, \cr
