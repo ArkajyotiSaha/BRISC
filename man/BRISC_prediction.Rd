@@ -3,11 +3,11 @@
 \title{Function for performing prediction with BRISC}
 
 \description{
-  The function \code{BRISC_prediction} performs prediction on a set of new
-  locations with univariate spatial regression models using outputs of
-  \code{BRISC_estimation}. Some code blocks are borrowed from the R package: spNNGP:
-  Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes
-  https://CRAN.R-project.org/package=spNNGP .
+  The function \code{BRISC_prediction} performs prediction on a set of new locations with
+  univariate spatial regression models using outputs of \code{BRISC_estimation} using Nearest
+  Neighbor Gaussian Processes (NNGP) (Datta et al., 2016). Some code blocks are borrowed from the
+  R package: spNNGP: Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian
+  Processes https://CRAN.R-project.org/package=spNNGP .
 }
 
 \usage{
@@ -44,17 +44,11 @@ BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
 }
 
 \references{
-  Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial
-  covariances. Stat, e184, DOI: 10.1002/sta4.184.
 
   Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
   Hierarchical Nearest-Neighbor Gaussian process models for large
   geostatistical datasets. Journal of the American Statistical
   Association, 111:800-812.
-
-  Vecchia, A. V. (1988) Estimation and model identification for
-  continuous spatial processes. Journal of the Royal Statistical
-  Society. Series B (Methodological), 297-312.
 
   Andrew Finley, Abhirup Datta and Sudipto Banerjee (2017). spNNGP: Spatial Regression Models for Large
   Datasets using Nearest Neighbor Gaussian Processes. R package version 0.1.1.
@@ -63,7 +57,7 @@ BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
 }
 
 \author{
-  Arkajyoti Saha \email{asaha8@jhmi.edu}, \cr
+  Arkajyoti Saha \email{arkajyotisaha93@gmail.com}, \cr
   Abhirup Datta \email{abhidatta@jhu.edu}
 }
 
