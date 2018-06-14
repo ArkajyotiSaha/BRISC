@@ -16,27 +16,6 @@ void zeros(double *a, int n){
     a[i] = 0.0;
 }
 
-void mvrnorm(double *des, double *mu, double *cholCov, int dim){
-
-  int i;
-  int inc = 1;
-  double one = 1.0;
-
-  for(i = 0; i < dim; i++){
-    des[i] = rnorm(0, 1);
-  }
-
-  F77_NAME(dtrmv)("L", "N", "N", &dim, cholCov, &dim, des, &inc);
-  F77_NAME(daxpy)(&dim, &one, mu, &inc, des, &inc);
-}
-
-double logit(double theta, double a, double b){
-  return log((theta-a)/(b-theta));
-}
-
-double logitInv(double z, double a, double b){
-  return b-(b-a)/(1+exp(z));
-}
 
 double dist2(double &a1, double &a2, double &b1, double &b2){
   return(sqrt(pow(a1-b1,2)+pow(a2-b2,2)));
@@ -89,26 +68,6 @@ void mkNNIndx(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nn
     }
   }
 
-}
-
-void mkUIndx(int n, int m, int* nnIndx, int* uIndx, int* uIndxLU){
-
-  int iNNIndx, iNN, i, j, k, l, h;
-
-  for(i = 0, l = 0; i < n; i++){
-    uIndxLU[i] = l;
-    for(j = 0, h = 0; j < n; j++){
-      getNNIndx(j, m, iNNIndx, iNN);
-      for(k = 0; k < iNN; k++){
-	if(nnIndx[iNNIndx+k] == i){
-	  uIndx[l+h] = j;
-	  h++;
-	}
-      }
-    }
-    l += h;
-    uIndxLU[n+i] = h;
-  }
 }
 
 std::string getCorName(int i){
@@ -164,19 +123,6 @@ double spCor(double &D, double &phi, double &nu, int &covModel, double *bk){
   }else{
     error("c++ error: cov.model is not correctly specified");
   }
-}
-
-//which index of b equals a, where b is of length n
-int which(int a, int *b, int n){
-  int i;
-  for(i = 0; i < n; i++){
-    if(a == b[i]){
-      return(i);
-    }
-  }
-
-  error("c++ error: which failed");
-  return -9999;
 }
 
 //Description: computes the quadratic term.
