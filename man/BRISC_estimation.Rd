@@ -3,8 +3,13 @@
 \title{Function for estimation with BRISC}
 
 \description{
-  The function \code{BRISC_estimation} fits univariate spatial
-  regression models using BRISC with Nearest Neighbor Gaussian Processes (NNGP).
+  The function \code{BRISC_estimation} fits univariate spatial regression models for large
+  spatial data using Vecchia's approximate likelihood (Vecchia, 1988) with Nearest Neighbor Gaussian
+  Processes (NNGP) (Datta et al., 2016). The Maximum Likelihood Estimates (MLE) of the parameters are used later
+  for calculating the confidence interval via the \code{BRISC_bootstrap} (BRISC, Saha & Datta, 2018). We recommend
+  using \code{BRISC_estimation} followed by \code{BRISC_bootstrap} to obtain the cofidence intervals
+  for the model parameters.
+
   The optimization is performed with C library of limited-memory BFGS
   libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno (L-BFGS),
   http://www.chokkan.org/software/liblbfgs/ (Naoaki Okazaki). For user convenience
