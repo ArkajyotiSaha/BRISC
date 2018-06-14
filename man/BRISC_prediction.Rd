@@ -89,10 +89,8 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-estimation_result <- BRISC_estimation(coords[1:800,], 
-                                  x[1:800,], y[1:800])
-prediction_result <- BRISC_prediction(estimation_result, 
-                          x[801:1000,], coords[801:1000,])
+estimation_result <- BRISC_estimation(coords[1:800,], x[1:800,], y[1:800])
+prediction_result <- BRISC_prediction(estimation_result, x[801:1000,], coords[801:1000,])
 
 }
 
