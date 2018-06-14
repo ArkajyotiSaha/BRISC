@@ -3,13 +3,12 @@
 \title{Function for performing bootstrap with BRISC}
 
 \description{
-  The function \code{BRISC_bootstrap} performs bootstrap on univariate spatial
-  regression models using outputs of \code{BRISC_estimation}. The optimization
-  is performed with C library of limited-memory BFGS libLBFGS: a library of Limited-memory
-  Broyden-Fletcher-Goldfarb-Shanno (L-BFGS), http://www.chokkan.org/software/liblbfgs/
-  (Naoaki Okazaki). For user convenience the soure codes of the package libLBFGS are
-  provided in the package. Some code blocks are borrowed from the R package: spNNGP:
-  Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes
+  The function \code{BRISC_bootstrap} performs bootstrap to provide confidence intervals for parameters of univariate spatial
+  regression models using outputs of \code{BRISC_estimation}. The details of the bootstrap method can be found in BRISC
+  (Saha & Datta, 2018). The optimization is performed with C library of limited-memory BFGS libLBFGS: a library of
+  Limited-memory Broyden-Fletcher-Goldfarb-Shanno (L-BFGS), http://www.chokkan.org/software/liblbfgs/ (Naoaki Okazaki).
+  For user convenience the soure codes of the package libLBFGS are provided in the package. Some code blocks are borrowed
+  from the R package: spNNGP: Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes
   https://CRAN.R-project.org/package=spNNGP .
 }
 
@@ -55,15 +54,6 @@ BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
   Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial
   covariances. Stat, e184, DOI: 10.1002/sta4.184.
 
-  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
-  Hierarchical Nearest-Neighbor Gaussian process models for large
-  geostatistical datasets. Journal of the American Statistical
-  Association, 111:800-812.
-
-  Vecchia, A. V. (1988) Estimation and model identification for
-  continuous spatial processes. Journal of the Royal Statistical
-  Society. Series B (Methodological), 297-312.
-
   Okazaki N. libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno
   (L-BFGS), http://www.chokkan.org/software/liblbfgs/ .
 
@@ -74,7 +64,7 @@ BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
 }
 
 \author{
-  Arkajyoti Saha \email{asaha8@jhmi.edu}, \cr
+  Arkajyoti Saha \email{arkajyotisaha93@gmail.com}, \cr
   Abhirup Datta \email{abhidatta@jhu.edu}
 }
 
