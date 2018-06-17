@@ -3,11 +3,11 @@
 \title{Function for performing prediction with BRISC}
 
 \description{
-  The function \code{BRISC_prediction} performs prediction on a set of new locations with
-  univariate spatial regression models using outputs of \code{BRISC_estimation} using Nearest
-  Neighbor Gaussian Processes (NNGP) (Datta et al., 2016). Some code blocks are borrowed from the
-  R package: spNNGP: Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian
-  Processes https://CRAN.R-project.org/package=spNNGP .
+  The function \code{BRISC_prediction} performs fast prediction on a set of new locations with univariate
+  spatial regression models using Nearest Neighbor Gaussian Processes (NNGP) (Datta et al., 2016).
+  BRISC_prediction  uses the parameter estimates from \code{BRISC_estimation} for the prediction. Some
+  code blocks are borrowed from the R package: spNNGP: Spatial Regression Models for Large Datasets
+  using Nearest Neighbor Gaussian Processes https://CRAN.R-project.org/package=spNNGP .
 }
 
 \usage{
