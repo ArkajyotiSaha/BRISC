@@ -19,13 +19,6 @@ void getNNIndx(int i, int m, int &iNNIndx, int &iNN);
 //Note: nnIndx and nnDist must be of length (1+m)/2*m+(n-m-1)*m on input. nnIndxLU must also be allocated on input.
 void mkNNIndx(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nnIndxLU);
 
-//void mkNNIndx2(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nnIndxLU);
-
-double dmi(double *x, double *c, int inc);
-
-double dei(double *x, double *c, int inc);
-
-void fastNN(int m, int n, double *coords, int ui, double *u, int *sIndx, int *rSIndx, double *rSNNDist);
 
 std::string getCorName(int i);
 
