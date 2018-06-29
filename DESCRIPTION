@@ -1,6 +1,6 @@
 Package: BRISC
 Type: Package
-Title: Bootstrap for Rapid Inference on Spatial Covariances (BRISC)
+Title: Fast Inference for Large Spatial Datasets using Bootstrap for Rapid Inference on Spatial Covariances (BRISC)
 Version: 0.1.0
 Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="arkajyotisaha93@gmail.com"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"))
 Maintainer: Arkajyoti Saha <arkajyotisaha93@gmail.com>
