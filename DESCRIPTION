@@ -6,7 +6,7 @@ Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="arkajyotis
 Maintainer: Arkajyoti Saha <arkajyotisaha93@gmail.com>
 Author: Arkajyoti Saha [aut, cre],
  Abhirup Datta [aut]
-Depends: R (>= 3.2.2), RANN, parallel, stats, rdist, matrixStats, pbapply
+Depends: R (>= 3.2), RANN, parallel, stats, rdist, matrixStats, pbapply
 Description: Fits Bootstrap with univariate spatial regression models using Bootstrap for Rapid Inference on Spatial Covariances (BRISC) for large datasets using Nearest Neighbor Gaussian Processes detailed in Saha and Datta (2018) <doi:10.1002/sta4.184>.
 License: GPL (>= 2)
 URL: https://github.com/ArkajyotiSaha/BRISC
