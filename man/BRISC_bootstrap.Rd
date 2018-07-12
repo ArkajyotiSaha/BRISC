@@ -79,7 +79,7 @@ rmvn <- function(n, mu = 0, V = matrix(1)){
 }
 
 set.seed(1)
-n <- 500
+n <- 400
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 beta <- c(1,5)
@@ -97,7 +97,7 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
 estimation_result <- BRISC_estimation(coords, x, y)
-bootstrap_result <- BRISC_bootstrap(estimation_result, n_boot = 5)
+bootstrap_result <- BRISC_bootstrap(estimation_result, n_boot = 6)
 
 }
 
