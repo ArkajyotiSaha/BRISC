@@ -2,7 +2,7 @@ Package: BRISC
 Type: Package
 Title: Fast Inference for Large Spatial Datasets using BRISC
 Version: 0.1.0
-Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="arkajyotisaha93@gmail.com"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"))
+Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="arkajyotisaha93@gmail.com"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"), person("Jorge", "Nocedal", role="ctb", email="j-nocedal@northwestern.edu"), person("Naoaki", "Okazaki", role="ctb", email="okazaki@c.titech.ac.jp"))
 Maintainer: Arkajyoti Saha <arkajyotisaha93@gmail.com>
 Author: Arkajyoti Saha [aut, cre],
  Abhirup Datta [aut],
