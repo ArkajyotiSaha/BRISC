@@ -21,7 +21,7 @@ BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
   \item{X.0}{the covariates for prediction locations. Its Structure should be identical (including intercept) with that of
              covariates provided for estimation purpose in \code{BRISC_estimation}. }
 
-  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its caleshould be same as that of coords
+  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its structure should be same as that of coords
                   in \code{BRISC_estimation}. }
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
@@ -72,7 +72,7 @@ rmvn <- function(n, mu = 0, V = matrix(1)){
 }
 
 set.seed(1)
-n <- 1000
+n <- 500
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 beta <- c(1,5)
@@ -89,8 +89,8 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-estimation_result <- BRISC_estimation(coords[1:800,], x[1:800,], y[1:800])
-prediction_result <- BRISC_prediction(estimation_result, x[801:1000,], coords[801:1000,])
+estimation_result <- BRISC_estimation(coords[1:400,], x[1:400,], y[1:400])
+prediction_result <- BRISC_prediction(estimation_result, x[401:500,], coords[401:500,])
 
 }
 

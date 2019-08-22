@@ -1,18 +1,21 @@
 Package: BRISC
 Type: Package
 Title: Fast Inference for Large Spatial Datasets using BRISC
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="arkajyotisaha93@gmail.com"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"), person("Jorge", "Nocedal", role="ctb", email="j-nocedal@northwestern.edu"), person("Naoaki", "Okazaki", role="ctb", email="okazaki@c.titech.ac.jp"))
 Maintainer: Arkajyoti Saha <arkajyotisaha93@gmail.com>
 Author: Arkajyoti Saha [aut, cre],
- Abhirup Datta [aut],
- Jorge Nocedal [ctb],
- Naoaki Okazaki [ctb]
-Depends: R (>= 3.3.0), RANN, parallel, stats, rdist, matrixStats, pbapply
+  Abhirup Datta [aut],
+  Jorge Nocedal [ctb],
+  Naoaki Okazaki [ctb]
+Depends: R (>= 3.3.0), RANN, parallel, stats, rdist, matrixStats,
+        pbapply, graphics
 Description: Fits Bootstrap with univariate spatial regression models using Bootstrap for Rapid Inference on Spatial Covariances (BRISC) for large datasets using Nearest Neighbor Gaussian Processes detailed in Saha and Datta (2018) <doi:10.1002/sta4.184>.
 License: GPL (>= 2)
 URL: https://github.com/ArkajyotiSaha/BRISC
 BugReports: https://github.com/ArkajyotiSaha/BRISC/issues
 Encoding: UTF-8
 NeedsCompilation: yes
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Packaged: 2019-08-19 14:00:00 UTC; arkajyotisaha
+Repository: CRAN

@@ -25,9 +25,9 @@
 
 \usage{
 BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1,
-                 nu = 0.5, n.neighbors = 15, n_omp = 1, order = "AMMD",
+                 nu = 0.5, n.neighbors = 15, n_omp = 1, order = "Sum_coords",
                  cov.model = "exponential", search.type = "tree",
-                 verbose = TRUE, eps = 2e-05)
+                 verbose = TRUE, eps = 2e-05, nugget_status = 1)
 }
 
 \arguments{
@@ -54,7 +54,7 @@ BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   \item{order}{Keyword that specifies the ordering scheme to be used in ordering the observations. Supported keywords are:
                "AMMD" and "Sum_coords" for approximate Maximum Minimum Distance and sum of coordinate based ordering,
-               respectively. Default value is "AMMD". }
+               respectively. Default value is "Sum_coords". \eqn{n > 65} is required for "AMMD".}
 
   \item{cov.model}{Keyword that specifies the covariance function to be used in modelling the spatial dependence structure
                    among the observations. Supported keywords are: "exponential", "matern", "spherical", and "gaussian"
@@ -68,6 +68,8 @@ BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1,
                  is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 
   \item{eps}{The tolerance to be used in centred finite difference approximation of derivatives. Default value is 2e-05. }
+
+  \item{nugget_status}{If nugget_status = 0, tau square is fixed to 0, if nugget_status = 1 tau square is variable and is estimated. Default value is 1. }
 }
 
 \value{

@@ -9,7 +9,6 @@ BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE
   n.neighbors <- BRISC_Out$n.neighbors
   coords <- BRISC_Out$coords
 
-
   n.omp.threads <- as.integer(n_omp)
   n <- nrow(X)
   p <- ncol(X)
@@ -65,10 +64,9 @@ BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE
   output <- list()
   output$prediction <- out$p.y.0[,1]
 
-
   result_new <- matrix(0,length(output$prediction),2)
   for(i in 1:length(result_new[,1])){
-    result_new[i,] <- c(out$p.y.0[,1][i] - 1.96 * out$var.y.0[,1][i], out$p.y.0[,1][i] + 1.96 * out$var.y.0[,1][i])
+      result_new[i,] <- c(out$p.y.0[,1][i] - 1.96 * out$var.y.0[,1][i], out$p.y.0[,1][i] + 1.96 * out$var.y.0[,1][i])
   }
 
   output$prediction.ci <- result_new

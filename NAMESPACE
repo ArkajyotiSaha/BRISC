@@ -3,5 +3,7 @@ useDynLib(BRISC, .registration=TRUE)
 export(BRISC_estimation)
 export(BRISC_bootstrap)
 export(BRISC_prediction)
+export(BRISC_variogram.ci)
 
 import(RANN, parallel, stats, rdist, matrixStats, pbapply)
+importFrom("graphics", "legend", "lines", "plot")

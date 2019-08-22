@@ -14,7 +14,7 @@
 
 \usage{
 BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
-                init = "Initial", verbose = TRUE)
+                init = "Initial", verbose = TRUE, nugget_status = 1)
 }
 
 \arguments{
@@ -35,6 +35,8 @@ BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
 
   \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm is
                  printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
+
+  \item{nugget_status}{If nugget_status = 0, tau square is fixed to 0, if nugget_status = 1 tau square is variable and is estimated. Default value is 1. }
 }
 
 \value{

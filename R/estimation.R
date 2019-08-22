@@ -1,10 +1,13 @@
 BRISC_estimation <- function(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1,
-                             order = "AMMD", cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05
+                             order = "Sum_coords", cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05, nugget_status = 1
 ){
   p <- ncol(x)
   n <- nrow(x)
   ##Coords and ordering
+  if(nugget_status == 0){fix_nugget = 0}
+  if(nugget_status == 1){fix_nugget = 1}
   if(!is.matrix(coords)){stop("error: coords must n-by-2 matrix of xy-coordinate locations")}
+  if(order == "AMMD" && length(y) < 65){stop("error: Number of data points must be atleast 65 to use AMMD")}
   if(ncol(coords) != 2 || nrow(coords) != n){
     stop("error: either the coords have more than two columns or then number of rows is different than
          data used in the model formula")
@@ -77,9 +80,11 @@ BRISC_estimation <- function(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1, 
 
   p1<- proc.time()
 
+  if(nugget_status == 2){alpha.sq.starting = 0}
+
 
   ##estimtion
-  result <- .Call("BRISC_estimatecpp", y, X, p, n, n.neighbors, coords, cov.model.indx, alpha.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, eps)
+  result <- .Call("BRISC_estimatecpp", y, X, p, n, n.neighbors, coords, cov.model.indx, alpha.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, eps, fix_nugget)
 
   p2 <- proc.time()
 

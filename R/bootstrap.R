@@ -1,8 +1,9 @@
-BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial", verbose = TRUE){
+BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "Initial", verbose = TRUE, nugget_status = 1){
 
   if(missing(BRISC_Out)){stop("error: BRISC_bootstrap expects BRISC_Out\n")}
 
-
+  if(nugget_status == 0){fix_nugget = 0}
+  if(nugget_status == 1){fix_nugget = 1}
   X <- BRISC_Out$X
   n.omp.threads <- as.integer(n_omp)
   n.neighbors <- BRISC_Out$n.neighbors
@@ -53,15 +54,15 @@ BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "I
     cl <- makeCluster(h)
     clusterExport(cl=cl, varlist=c("norm.residual", "X", "B", "F", "Xbeta", "D", "d", "nnIndx", "nnIndxLU",
                                    "CIndx", "n", "p", "n.neighbors", "theta_boot_init", "cov.model.indx", "Length.D",
-                                   "n.omp.threads", "bootstrap_brisc", "eps"),envir=environment())
+                                   "n.omp.threads", "bootstrap_brisc", "eps", "fix_nugget"),envir=environment())
     if(verbose == TRUE){
       cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tBootstrap Progress"), collapse="   "), "\n"); cat(paste(("----------------------------------------"), collapse="   "), "\n")
       pboptions(type = "txt", char = "=")
       result <- pblapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
-                                            cov.model.indx, Length.D, n.omp.threads, eps, cl = cl)
+                                            cov.model.indx, Length.D, n.omp.threads, eps, fix_nugget, cl = cl)
       }
     if(verbose != TRUE){result <- parLapply(cl,1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
-                                            cov.model.indx, Length.D, n.omp.threads, eps)}
+                                            cov.model.indx, Length.D, n.omp.threads, eps, fix_nugget)}
     stopCluster(cl)
   }
   if(h == 1){
@@ -69,12 +70,12 @@ BRISC_bootstrap <- function(BRISC_Out, n_boot = 100, h = 1, n_omp = 1, init = "I
       cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tBootstrap Progress"), collapse="   "), "\n"); cat(paste(("----------------------------------------"), collapse="   "), "\n")
       pboptions(type = "txt", char = "=")
       result <- pblapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
-                       cov.model.indx, Length.D, n.omp.threads, eps)
+                       cov.model.indx, Length.D, n.omp.threads, eps, fix_nugget)
     }
-    
+
     if(verbose != TRUE){
       result <- lapply(1:n_boot,bootstrap_brisc,norm.residual, X, B, F, Xbeta, D, d, nnIndx, nnIndxLU, CIndx, n, p, n.neighbors, theta_boot_init,
-                       cov.model.indx, Length.D, n.omp.threads, eps)
+                       cov.model.indx, Length.D, n.omp.threads, eps, fix_nugget)
     }
   }
 

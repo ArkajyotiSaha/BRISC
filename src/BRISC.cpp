@@ -37,6 +37,7 @@ extern "C" {
 
     int j_nngp;
     double eps_nngp;
+    double fix_nugget_nngp;
 
 
     //covmodel = 0; exponential
@@ -49,7 +50,7 @@ extern "C" {
 
     //Update B and F:
 
-    double updateBF(double *B, double *F, double *c, double *C, double *D, double *d, int *nnIndxLU, int *CIndx, int n, double *theta, int covModel, int nThreads){
+    double updateBF(double *B, double *F, double *c, double *C, double *D, double *d, int *nnIndxLU, int *CIndx, int n, double *theta, int covModel, int nThreads, double fix_nugget){
         int i, k, l;
         int info = 0;
         int inc = 1;
@@ -84,17 +85,17 @@ extern "C" {
                     for(l = 0; l <= k; l++){
                         C[CIndx[i]+l*nnIndxLU[n+i]+k] = spCor(D[CIndx[i]+l*nnIndxLU[n+i]+k], theta[1], nu, covModel, &bk[threadID*nb]);
                         if(l == k){
-                            C[CIndx[i]+l*nnIndxLU[n+i]+k] += theta[0];
+                            C[CIndx[i]+l*nnIndxLU[n+i]+k] += theta[0]*fix_nugget;
                         }
                     }
                 }
                 F77_NAME(dpotrf)(&lower, &nnIndxLU[n+i], &C[CIndx[i]], &nnIndxLU[n+i], &info); if(info != 0){error("c++ error: dpotrf failed\n");}
                 F77_NAME(dpotri)(&lower, &nnIndxLU[n+i], &C[CIndx[i]], &nnIndxLU[n+i], &info); if(info != 0){error("c++ error: dpotri failed\n");}
                 F77_NAME(dsymv)(&lower, &nnIndxLU[n+i], &one, &C[CIndx[i]], &nnIndxLU[n+i], &c[nnIndxLU[i]], &inc, &zero, &B[nnIndxLU[i]], &inc);
-                F[i] = 1 - F77_NAME(ddot)(&nnIndxLU[n+i], &B[nnIndxLU[i]], &inc, &c[nnIndxLU[i]], &inc) + theta[0];
+                F[i] = 1 - F77_NAME(ddot)(&nnIndxLU[n+i], &B[nnIndxLU[i]], &inc, &c[nnIndxLU[i]], &inc) + theta[0]*fix_nugget;
             }else{
                 B[i] = 0;
-                F[i] = 1 + theta[0];
+                F[i] = 1 + theta[0]*fix_nugget;
             }
         }
         for(i = 0; i < n; i++){
@@ -132,7 +133,7 @@ extern "C" {
     }
 
 
-    void processed_output(double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, double *theta, int covModel, int j, int nThreads, double optimized_likelihod, double *B, double *F, double *beta, double *Xbeta, double *norm_residual, double *theta_fp){
+    void processed_output(double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, double *theta, int covModel, int j, int nThreads, double optimized_likelihod, double *B, double *F, double *beta, double *Xbeta, double *norm_residual, double *theta_fp, double fix_nugget){
 
         char const *ntran = "N";
         int nIndx = static_cast<int>(static_cast<double>(1+m)/2*m+(n-m-1)*m);
@@ -156,7 +157,7 @@ extern "C" {
         double *residual = (double *) R_alloc(n, sizeof(double));
 
         //create B and F
-        logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads);
+        logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads, fix_nugget);
 
         int i;
         for(i = 0; i < p; i++){
@@ -195,7 +196,7 @@ extern "C" {
 
 
         // 2. Create tau square
-        theta_fp[1] = theta[0] * theta_fp[0];
+        theta_fp[1] = theta[0] * theta_fp[0] * fix_nugget;
 
         // 3. Create phi
         theta_fp[2] = theta[1];
@@ -209,7 +210,7 @@ extern "C" {
 
 
     //Defining likelihood in terms of theta.
-    double likelihood(double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, double *theta, int covModel, int j, int nThreads){
+    double likelihood(double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, double *theta, int covModel, int j, int nThreads, double fix_nugget){
 
         char const *ntran = "N";
         int nIndx = static_cast<int>(static_cast<double>(1+m)/2*m+(n-m-1)*m);
@@ -235,7 +236,7 @@ extern "C" {
         double *beta = (double *) R_alloc(p, sizeof(double));
         double *tmp_n = (double *) R_alloc(n, sizeof(double));
 
-        logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads);
+        logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads, fix_nugget);
 
         int i;
         for(i = 0; i < p; i++){
@@ -262,60 +263,60 @@ extern "C" {
     //Defining likelihood w.r.t unconstrained optimization with alpha, root_phi, root_nu (in case of matern);
 
     // a. Non-matern models
-    double likelihood_lbfgs_non_matern(double alpha, double root_phi, double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, int covModel, int j, int nThreads){
+    double likelihood_lbfgs_non_matern(double alpha, double root_phi, double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, int covModel, int j, int nThreads, double fix_nugget){
         double *theta = (double *) R_alloc(2, sizeof(double));
         theta[0] = pow(alpha, 2.0);
         theta[1] = pow(root_phi, 2.0);
-        double res = likelihood(X, y, D, d, nnIndx, nnIndxLU, CIndx, n, p, m, theta, covModel, j, nThreads);//some unnecessary checking are happening here, will remove afterwards
+        double res = likelihood(X, y, D, d, nnIndx, nnIndxLU, CIndx, n, p, m, theta, covModel, j, nThreads, fix_nugget);//some unnecessary checking are happening here, will remove afterwards
         return(res);
     }
 
 
     //b. matern models
-    double likelihood_lbfgs_matern(double alpha, double root_phi, double root_nu, double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, int covModel, int j, int nThreads){
+    double likelihood_lbfgs_matern(double alpha, double root_phi, double root_nu, double *X, double *y, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, int covModel, int j, int nThreads, double fix_nugget){
         double *theta = (double *) R_alloc(3, sizeof(double));
         theta[0] = pow(alpha, 2.0);
         theta[1] = pow(root_phi, 2.0);
         theta[2] = pow(root_nu, 2.0);
-        double res = likelihood(X, y, D, d, nnIndx, nnIndxLU, CIndx, n, p, m, theta, covModel, j, nThreads);//some unnecessary checking are happening here, will remove afterwards;
+        double res = likelihood(X, y, D, d, nnIndx, nnIndxLU, CIndx, n, p, m, theta, covModel, j, nThreads, fix_nugget);//some unnecessary checking are happening here, will remove afterwards;
         return(res);
     }
 
 
     static lbfgsfloatval_t evaluate(
-                                    void *instance,
-                                    const lbfgsfloatval_t *x,
-                                    lbfgsfloatval_t *g,
-                                    const int n,
-                                    const lbfgsfloatval_t step
-                                    )
+            void *instance,
+            const lbfgsfloatval_t *x,
+            lbfgsfloatval_t *g,
+            const int n,
+            const lbfgsfloatval_t step
+    )
     {
         int i;
         lbfgsfloatval_t fx = 0.0;
 
         if (covModel_nngp != 2) {
             for (i = 0;i < n;i += 2) {
-                g[i+1] = (likelihood_lbfgs_non_matern(x[i], (x[i+1]  + eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp) - likelihood_lbfgs_non_matern(x[i], (x[i+1] - eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp))/(2*eps_nngp);
+                g[i+1] = (likelihood_lbfgs_non_matern(x[i], (x[i+1]  + eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp) - likelihood_lbfgs_non_matern(x[i], (x[i+1] - eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp,fix_nugget_nngp))/(2*eps_nngp);
 
-                g[i] = (likelihood_lbfgs_non_matern((x[i] + eps_nngp), x[i+1], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp) - likelihood_lbfgs_non_matern((x[i] - eps_nngp), x[i+1], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp))/(2*eps_nngp);
+                g[i] = (likelihood_lbfgs_non_matern((x[i] + eps_nngp), x[i+1], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp) - likelihood_lbfgs_non_matern((x[i] - eps_nngp), x[i+1], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp,fix_nugget_nngp))/(2*eps_nngp);
 
-                fx += likelihood_lbfgs_non_matern(x[i], x[i+1], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp,j_nngp, nThreads_nngp);
+                fx += likelihood_lbfgs_non_matern(x[i], x[i+1], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp,j_nngp, nThreads_nngp,fix_nugget_nngp);
             }
         } else {
             for (i = 0;i < n;i += 3) {
-                g[i+1] = (likelihood_lbfgs_matern(x[i], (x[i+1]  + eps_nngp), x[i+2], X_nngp, ::y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp) - likelihood_lbfgs_matern(x[i], (x[i+1] - eps_nngp), x[i+2], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp))/(2*eps_nngp);
+                g[i+1] = (likelihood_lbfgs_matern(x[i], (x[i+1]  + eps_nngp), x[i+2], X_nngp, ::y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp) - likelihood_lbfgs_matern(x[i], (x[i+1] - eps_nngp), x[i+2], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp))/(2*eps_nngp);
 
-                g[i] = (likelihood_lbfgs_matern((x[i] + eps_nngp), x[i+1], x[i+2], X_nngp, ::y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp) - likelihood_lbfgs_matern((x[i] - eps_nngp), x[i+1], x[i+2], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp))/(2*eps_nngp);
+                g[i] = (likelihood_lbfgs_matern((x[i] + eps_nngp), x[i+1], x[i+2], X_nngp, ::y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp) - likelihood_lbfgs_matern((x[i] - eps_nngp), x[i+1], x[i+2], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp))/(2*eps_nngp);
 
-                g[i+2] = (likelihood_lbfgs_matern(x[i], x[i+1], (x[i+2] + eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp) - likelihood_lbfgs_matern(x[i], x[i+1], (x[i+2] - eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp))/(2*eps_nngp);
+                g[i+2] = (likelihood_lbfgs_matern(x[i], x[i+1], (x[i+2] + eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp) - likelihood_lbfgs_matern(x[i], x[i+1], (x[i+2] - eps_nngp), X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp))/(2*eps_nngp);
 
-                fx += likelihood_lbfgs_matern(x[i], x[i+1], x[i+2], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp);
+                fx += likelihood_lbfgs_matern(x[i], x[i+1], x[i+2], X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, covModel_nngp, j_nngp, nThreads_nngp, fix_nugget_nngp);
             }
         }
         return fx;
     }
 
-    void processed_bootstrap_output(double *X, double *y_boot, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, double *theta, int covModel, int j, int nThreads, double optimized_likelihod, double *beta_boot, double *theta_fp_boot){
+    void processed_bootstrap_output(double *X, double *y_boot, double *D, double *d, int *nnIndx, int *nnIndxLU, int *CIndx, int n, int p, int m, double *theta, int covModel, int j, int nThreads, double optimized_likelihod, double *beta_boot, double *theta_fp_boot, double fix_nugget){
 
         int nIndx = static_cast<int>(static_cast<double>(1+m)/2*m+(n-m-1)*m);
         double *B = (double *) R_alloc(nIndx, sizeof(double));
@@ -339,7 +340,7 @@ extern "C" {
         double *tmp_n = (double *) R_alloc(n, sizeof(double));
 
         //create B and F
-        logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads);
+        logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads, fix_nugget);
 
         int i;
         for(i = 0; i < p; i++){
@@ -368,7 +369,7 @@ extern "C" {
 
 
         // 2. Create tau square
-        theta_fp_boot[1] = theta[0] * theta_fp_boot[0];
+        theta_fp_boot[1] = theta[0] * theta_fp_boot[0] * fix_nugget;
 
         // 3. Create phi
         theta_fp_boot[2] = theta[1];
@@ -414,7 +415,7 @@ extern "C" {
     }
 
 
-    SEXP BRISC_bootstrapcpp(SEXP X_r, SEXP B_r, SEXP F_r, SEXP Xbeta_r, SEXP norm_residual_boot_r, SEXP D_r, SEXP d_r, SEXP nnIndx_r, SEXP nnIndxLU_r, SEXP CIndx_r, SEXP n_r, SEXP p_r, SEXP m_r, SEXP theta_r, SEXP covModel_r, SEXP j_r, SEXP nThreads_r, SEXP eps_r){
+    SEXP BRISC_bootstrapcpp(SEXP X_r, SEXP B_r, SEXP F_r, SEXP Xbeta_r, SEXP norm_residual_boot_r, SEXP D_r, SEXP d_r, SEXP nnIndx_r, SEXP nnIndxLU_r, SEXP CIndx_r, SEXP n_r, SEXP p_r, SEXP m_r, SEXP theta_r, SEXP covModel_r, SEXP j_r, SEXP nThreads_r, SEXP eps_r, SEXP fix_nugget_r){
 
         const int inc = 1;
         const double one = 1.0;
@@ -432,6 +433,7 @@ extern "C" {
         nThreads_nngp = INTEGER(nThreads_r)[0];
         m_nngp = INTEGER(m_r)[0];
         eps_nngp = REAL(eps_r)[0];
+        fix_nugget_nngp = REAL(fix_nugget_r)[0];
 
 
         int nProtect = 0;
@@ -491,7 +493,7 @@ extern "C" {
 
         SEXP beta_r; PROTECT(beta_r = allocVector(REALSXP, p_nngp)); nProtect++; double *beta_boot = REAL(beta_r);
 
-        processed_bootstrap_output(X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, theta_boot, covModel_nngp, j_nngp, nThreads_nngp, fx, beta_boot, theta_fp_boot);
+        processed_bootstrap_output(X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, theta_boot, covModel_nngp, j_nngp, nThreads_nngp, fx, beta_boot, theta_fp_boot, fix_nugget_nngp);
 
         SEXP result_r, resultName_r;
         int nResultListObjs = 2;
@@ -516,7 +518,7 @@ extern "C" {
 
 
     SEXP BRISC_estimatecpp(SEXP y_r, SEXP X_r, SEXP p_r, SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP alphaSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
-                   SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP eps_r){
+                           SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP eps_r, SEXP fix_nugget_r){
 
         int i, k, l, nProtect=0;
 
@@ -527,6 +529,7 @@ extern "C" {
         n_nngp = INTEGER(n_r)[0];
         m_nngp = INTEGER(m_r)[0];
         eps_nngp = REAL(eps_r)[0];
+        fix_nugget_nngp = REAL(fix_nugget_r)[0];
         double *coords = REAL(coords_r);
 
         covModel_nngp = INTEGER(covModel_r)[0];
@@ -627,10 +630,10 @@ extern "C" {
         }
 
         if(verbose){
-          Rprintf("----------------------------------------\n");
-          Rprintf("\tPerforming optimization\n");
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tPerforming optimization\n");
 #ifdef Win32
-          R_FlushConsole();
+            R_FlushConsole();
 #endif
         }
 
@@ -667,11 +670,11 @@ extern "C" {
         lbfgs_free(x);
 
         if(verbose){
-          Rprintf("----------------------------------------\n");
-          Rprintf("\tProcessing optimizers\n");
-          Rprintf("----------------------------------------\n");
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tProcessing optimizers\n");
+            Rprintf("----------------------------------------\n");
 #ifdef Win32
-          R_FlushConsole();
+            R_FlushConsole();
 #endif
         }
 
@@ -690,7 +693,7 @@ extern "C" {
 
         SEXP theta_fp_r; PROTECT(theta_fp_r = allocVector(REALSXP, nTheta_full)); nProtect++; double *theta_fp_nngp = REAL(theta_fp_r);
 
-        processed_output(X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, theta_nngp, covModel_nngp, j_nngp, nThreads_nngp, fx, B_nngp, F_nngp, beta_nngp, Xbeta_nngp, norm_residual_nngp, theta_fp_nngp);
+        processed_output(X_nngp, y_nngp, D_nngp, d_nngp, nnIndx_nngp, nnIndxLU_nngp, CIndx_nngp, n_nngp, p_nngp, m_nngp, theta_nngp, covModel_nngp, j_nngp, nThreads_nngp, fx, B_nngp, F_nngp, beta_nngp, Xbeta_nngp, norm_residual_nngp, theta_fp_nngp, fix_nugget_nngp);
 
         //return stuff
         SEXP result_r, resultName_r;
