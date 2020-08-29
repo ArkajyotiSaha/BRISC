@@ -106,7 +106,7 @@ phi = 5
 set.seed(1)
 D <- as.matrix(dist(coords))
 R <- exp(-phi*D)
-sim <- rmvn(3, rep(0,N), sigma.sq*R)
+sim <- rmvn(3, rep(0,n), sigma.sq*R)
 decorrelation_result <- BRISC_decorrelation(coords, sigma.sq = sigma.sq, phi = phi, sim = sim)
 }
 
