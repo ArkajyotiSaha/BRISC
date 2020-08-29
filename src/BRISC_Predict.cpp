@@ -164,7 +164,7 @@ extern "C" {
 	}
 
 	y0[i] = F77_NAME(ddot)(&p, &X0[i], &q, &beta[0], &inc) + d;
-    vary0[i] = sqrt(sigmaSq + tauSq - F77_NAME(ddot)(&m, &tmp_m[threadID*m], &inc, &c[threadID*m], &inc));
+    vary0[i] = std::max(0.0, sqrt(sigmaSq + tauSq - F77_NAME(ddot)(&m, &tmp_m[threadID*m], &inc, &c[threadID*m], &inc)));
     }
 
 

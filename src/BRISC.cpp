@@ -750,6 +750,331 @@ extern "C" {
 
         return(result_r);
     }
+
+    SEXP BRISC_correlationcpp(SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP alphaSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
+                             SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP sim_r, SEXP sim_number_r, SEXP fix_nugget_r){
+
+        int i, j, k, l, nProtect=0;
+
+        //get args
+        int n = INTEGER(n_r)[0];
+        int m = INTEGER(m_r)[0];
+        double fix_nugget = REAL(fix_nugget_r)[0];
+        double *coords = REAL(coords_r);
+
+        int covModel = INTEGER(covModel_r)[0];
+        std::string corName = getCorName(covModel);
+
+        int nThreads = INTEGER(nThreads_r)[0];
+        int sim_number = INTEGER(sim_number_r)[0];
+        double *sim = REAL(sim_r);
+        int tot_length = n*sim_number;
+        int verbose = INTEGER(verbose_r)[0];
+
+
+
+#ifdef _OPENMP
+        omp_set_num_threads(nThreads);
+#else
+        if(nThreads > 1){
+            warning("n.omp.threads > %i, but source not compiled with OpenMP support.", nThreads);
+            nThreads = 1;
+        }
+#endif
+
+        if(verbose){
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tModel description\n");
+            Rprintf("----------------------------------------\n");
+            Rprintf("BRISC simulation with %i locations.\n\n", n);
+            Rprintf("Using the %s spatial correlation model.\n\n", corName.c_str());
+            Rprintf("Using %i nearest neighbors.\n\n", m);
+#ifdef _OPENMP
+            Rprintf("\nSource compiled with OpenMP support and model fit using %i thread(s).\n", nThreads);
+#else
+            Rprintf("\n\nSource not compiled with OpenMP support.\n");
+#endif
+        }
+
+        //parameters
+        int nTheta;
+
+        if(corName != "matern"){
+            nTheta = 2;//tau^2 = 0, phi = 1
+        }else{
+            nTheta = 3;//tau^2 = 0, phi = 1, nu = 2;
+        }
+        //starting
+        double *theta = (double *) R_alloc (nTheta, sizeof(double));
+
+        theta[0] = pow(REAL(alphaSqStarting_r)[0], 2.0);
+        theta[1] = pow(REAL(phiStarting_r)[0], 2.0);
+
+        if(corName == "matern"){
+            theta[2] = pow(REAL(nuStarting_r)[0], 2.0);
+        }
+
+        //allocated for the nearest neighbor index vector (note, first location has no neighbors).
+        int nIndx = static_cast<int>(static_cast<double>(1+m)/2*m+(n-m-1)*m);
+        //SEXP nnIndx_r; PROTECT(nnIndx_r = allocVector(INTSXP, nIndx)); nProtect++; int *nnIndx = INTEGER(nnIndx_r);
+        int *nnIndx = (int *) R_alloc(nIndx, sizeof(int));
+        //SEXP d_r; PROTECT(d_r = allocVector(REALSXP, nIndx)); nProtect++; double *d = REAL(d_r);
+        double *d = (double *) R_alloc(nIndx, sizeof(double));
+        //SEXP nnIndxLU_r; PROTECT(nnIndxLU_r = allocVector(INTSXP, 2*n)); nProtect++; int *nnIndxLU = INTEGER(nnIndxLU_r); //first column holds the nnIndx index for the i-th location and the second columns holds the number of neighbors the i-th location has (the second column is a bit of a waste but will simlifying some parallelization).
+        int *nnIndxLU = (int *) R_alloc(2*n, sizeof(int));
+        //make the neighbor index
+        if(verbose){
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tBuilding neighbor index\n");
+#ifdef Win32
+            R_FlushConsole();
+#endif
+        }
+
+        if(INTEGER(sType_r)[0] == 0){
+            mkNNIndx(n, m, coords, nnIndx, d, nnIndxLU);
+        }else{
+            mkNNIndxTree0(n, m, coords, nnIndx, d, nnIndxLU);
+        }
+
+
+        //SEXP CIndx_r; PROTECT(CIndx_r = allocVector(INTSXP, 2*n)); nProtect++; int *CIndx = INTEGER(CIndx_r); //index for D and C.
+        int *CIndx = (int *) R_alloc(2*n, sizeof(int));
+        for(i = 0, j = 0; i < n; i++){//zero should never be accessed
+            j += nnIndxLU[n+i]*nnIndxLU[n+i];
+            if(i == 0){
+                CIndx[n+i] = 0;
+                CIndx[i] = 0;
+            }else{
+                CIndx[n+i] = nnIndxLU[n+i]*nnIndxLU[n+i];
+                CIndx[i] = CIndx[n+i-1] + CIndx[i-1];
+            }
+        }
+
+        //SEXP j_r; PROTECT(j_r = allocVector(INTSXP, 1)); nProtect++; INTEGER(j_r)[0] = j;
+
+        //SEXP D_r; PROTECT(D_r = allocVector(REALSXP, j)); nProtect++; double *D = REAL(D_r);
+        double *D = (double *) R_alloc(j, sizeof(double));
+
+        SEXP sim_cor_r; PROTECT(sim_cor_r = allocVector(REALSXP, tot_length)); nProtect++; double *sim_cor = REAL(sim_cor_r);
+
+        for(i = 0; i < n; i++){
+            for(k = 0; k < nnIndxLU[n+i]; k++){
+                for(l = 0; l <= k; l++){
+                    D[CIndx[i]+l*nnIndxLU[n+i]+k] = dist2(coords[nnIndx[nnIndxLU[i]+k]], coords[n+nnIndx[nnIndxLU[i]+k]], coords[nnIndx[nnIndxLU[i]+l]], coords[n+nnIndx[nnIndxLU[i]+l]]);
+                }
+            }
+        }
+
+        if(verbose){
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tCalculationg the approximate Cholesky Decomposition\n");
+#ifdef Win32
+            R_FlushConsole();
+#endif
+        }
+
+        double *B = (double *) R_alloc(nIndx, sizeof(double));
+        double *F = (double *) R_alloc(n, sizeof(double));
+        //SEXP B_r; PROTECT(B_r = allocVector(REALSXP, nIndx)); nProtect++; double *B = REAL(B_r);
+
+        //SEXP F_r; PROTECT(F_r = allocVector(REALSXP, n)); nProtect++; double *F = REAL(F_r);
+
+        double *c =(double *) R_alloc(nIndx, sizeof(double));
+        double *C = (double *) R_alloc(j, sizeof(double)); zeros(C, j);
+
+        double logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads, fix_nugget);
+
+        for(int im = 0; im < sim_number; im++){
+            solve_B_F(B, F, &sim[n*im], n, nnIndxLU, nnIndx, &sim_cor[n*im]);
+        }
+
+        //return stuff
+        SEXP result_r, resultName_r;
+        int nResultListObjs = 2;
+
+
+
+        PROTECT(result_r = allocVector(VECSXP, nResultListObjs)); nProtect++;
+        PROTECT(resultName_r = allocVector(VECSXP, nResultListObjs)); nProtect++;
+
+        SET_VECTOR_ELT(result_r, 0, sim_r);
+        SET_VECTOR_ELT(resultName_r, 0, mkChar("norm_sim"));
+
+        SET_VECTOR_ELT(result_r, 1, sim_cor_r);
+        SET_VECTOR_ELT(resultName_r, 1, mkChar("sim"));
+
+        namesgets(result_r, resultName_r);
+
+        //unprotect
+        UNPROTECT(nProtect);
+
+
+        return(result_r);
+    }
+
+
+    SEXP BRISC_decorrelationcpp(SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP alphaSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
+                              SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP sim_r, SEXP sim_number_r, SEXP fix_nugget_r){
+
+        int i, j, k, l, nProtect=0;
+
+        //get args
+        int n = INTEGER(n_r)[0];
+        int m = INTEGER(m_r)[0];
+        double fix_nugget = REAL(fix_nugget_r)[0];
+        double *coords = REAL(coords_r);
+
+        int covModel = INTEGER(covModel_r)[0];
+        std::string corName = getCorName(covModel);
+
+        int nThreads = INTEGER(nThreads_r)[0];
+        int sim_number = INTEGER(sim_number_r)[0];
+        double *sim = REAL(sim_r);
+        int tot_length = n*sim_number;
+        int verbose = INTEGER(verbose_r)[0];
+
+
+
+#ifdef _OPENMP
+        omp_set_num_threads(nThreads);
+#else
+        if(nThreads > 1){
+            warning("n.omp.threads > %i, but source not compiled with OpenMP support.", nThreads);
+            nThreads = 1;
+        }
+#endif
+
+        if(verbose){
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tModel description\n");
+            Rprintf("----------------------------------------\n");
+            Rprintf("BRISC simulation with %i locations.\n\n", n);
+            Rprintf("Using the %s spatial correlation model.\n\n", corName.c_str());
+            Rprintf("Using %i nearest neighbors.\n\n", m);
+#ifdef _OPENMP
+            Rprintf("\nSource compiled with OpenMP support and model fit using %i thread(s).\n", nThreads);
+#else
+            Rprintf("\n\nSource not compiled with OpenMP support.\n");
+#endif
+        }
+
+        //parameters
+        int nTheta;
+
+        if(corName != "matern"){
+            nTheta = 2;//tau^2 = 0, phi = 1
+        }else{
+            nTheta = 3;//tau^2 = 0, phi = 1, nu = 2;
+        }
+        //starting
+        double *theta = (double *) R_alloc (nTheta, sizeof(double));
+
+        theta[0] = pow(REAL(alphaSqStarting_r)[0], 2.0);
+        theta[1] = pow(REAL(phiStarting_r)[0], 2.0);
+
+        if(corName == "matern"){
+            theta[2] = pow(REAL(nuStarting_r)[0], 2.0);
+        }
+
+        //allocated for the nearest neighbor index vector (note, first location has no neighbors).
+        int nIndx = static_cast<int>(static_cast<double>(1+m)/2*m+(n-m-1)*m);
+        //SEXP nnIndx_r; PROTECT(nnIndx_r = allocVector(INTSXP, nIndx)); nProtect++; int *nnIndx = INTEGER(nnIndx_r);
+        int *nnIndx = (int *) R_alloc(nIndx, sizeof(int));
+        //SEXP d_r; PROTECT(d_r = allocVector(REALSXP, nIndx)); nProtect++; double *d = REAL(d_r);
+        double *d = (double *) R_alloc(nIndx, sizeof(double));
+        //SEXP nnIndxLU_r; PROTECT(nnIndxLU_r = allocVector(INTSXP, 2*n)); nProtect++; int *nnIndxLU = INTEGER(nnIndxLU_r); //first column holds the nnIndx index for the i-th location and the second columns holds the number of neighbors the i-th location has (the second column is a bit of a waste but will simlifying some parallelization).
+        int *nnIndxLU = (int *) R_alloc(2*n, sizeof(int));
+        //make the neighbor index
+        if(verbose){
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tBuilding neighbor index\n");
+#ifdef Win32
+            R_FlushConsole();
+#endif
+        }
+
+        if(INTEGER(sType_r)[0] == 0){
+            mkNNIndx(n, m, coords, nnIndx, d, nnIndxLU);
+        }else{
+            mkNNIndxTree0(n, m, coords, nnIndx, d, nnIndxLU);
+        }
+
+
+        //SEXP CIndx_r; PROTECT(CIndx_r = allocVector(INTSXP, 2*n)); nProtect++; int *CIndx = INTEGER(CIndx_r); //index for D and C.
+        int *CIndx = (int *) R_alloc(2*n, sizeof(int));
+        for(i = 0, j = 0; i < n; i++){//zero should never be accessed
+            j += nnIndxLU[n+i]*nnIndxLU[n+i];
+            if(i == 0){
+                CIndx[n+i] = 0;
+                CIndx[i] = 0;
+            }else{
+                CIndx[n+i] = nnIndxLU[n+i]*nnIndxLU[n+i];
+                CIndx[i] = CIndx[n+i-1] + CIndx[i-1];
+            }
+        }
+
+        //SEXP j_r; PROTECT(j_r = allocVector(INTSXP, 1)); nProtect++; INTEGER(j_r)[0] = j;
+
+        //SEXP D_r; PROTECT(D_r = allocVector(REALSXP, j)); nProtect++; double *D = REAL(D_r);
+        double *D = (double *) R_alloc(j, sizeof(double));
+
+        SEXP sim_decor_r; PROTECT(sim_decor_r = allocVector(REALSXP, tot_length)); nProtect++; double *sim_decor = REAL(sim_decor_r);
+
+        for(i = 0; i < n; i++){
+            for(k = 0; k < nnIndxLU[n+i]; k++){
+                for(l = 0; l <= k; l++){
+                    D[CIndx[i]+l*nnIndxLU[n+i]+k] = dist2(coords[nnIndx[nnIndxLU[i]+k]], coords[n+nnIndx[nnIndxLU[i]+k]], coords[nnIndx[nnIndxLU[i]+l]], coords[n+nnIndx[nnIndxLU[i]+l]]);
+                }
+            }
+        }
+
+        if(verbose){
+            Rprintf("----------------------------------------\n");
+            Rprintf("\tCalculationg the approximate Cholesky Decomposition\n");
+#ifdef Win32
+            R_FlushConsole();
+#endif
+        }
+
+        double *B = (double *) R_alloc(nIndx, sizeof(double));
+        double *F = (double *) R_alloc(n, sizeof(double));
+        //SEXP B_r; PROTECT(B_r = allocVector(REALSXP, nIndx)); nProtect++; double *B = REAL(B_r);
+
+        //SEXP F_r; PROTECT(F_r = allocVector(REALSXP, n)); nProtect++; double *F = REAL(F_r);
+
+        double *c =(double *) R_alloc(nIndx, sizeof(double));
+        double *C = (double *) R_alloc(j, sizeof(double)); zeros(C, j);
+
+        double logDet = updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta, covModel, nThreads, fix_nugget);
+
+        for(int im = 0; im < sim_number; im++){
+            product_B_F(B, F, &sim[n*im], n, nnIndxLU, nnIndx, &sim_decor[n*im]);
+        }
+
+        //return stuff
+        SEXP result_r, resultName_r;
+        int nResultListObjs = 2;
+
+
+
+        PROTECT(result_r = allocVector(VECSXP, nResultListObjs)); nProtect++;
+        PROTECT(resultName_r = allocVector(VECSXP, nResultListObjs)); nProtect++;
+
+        SET_VECTOR_ELT(result_r, 0, sim_r);
+        SET_VECTOR_ELT(resultName_r, 0, mkChar("sim"));
+
+        SET_VECTOR_ELT(result_r, 1, sim_decor_r);
+        SET_VECTOR_ELT(resultName_r, 1, mkChar("residual_sim"));
+
+        namesgets(result_r, resultName_r);
+
+        //unprotect
+        UNPROTECT(nProtect);
+
+
+        return(result_r);
+    }
 }
 
 

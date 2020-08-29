@@ -24,7 +24,7 @@
 }
 
 \usage{
-BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1,
+BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
                  nu = 0.5, n.neighbors = 15, n_omp = 1, order = "Sum_coords",
                  cov.model = "exponential", search.type = "tree",
                  verbose = TRUE, eps = 2e-05, nugget_status = 1)
@@ -35,9 +35,9 @@ BRISC_estimation(coords, x, y, sigma.sq = 1, tau.sq = 0.1, phi = 1,
   \item{coords}{an \eqn{n \times 2}{n x 2} matrix of the observation
   coordinates in \eqn{R^2}{R^2} (e.g., easting and northing). }
 
-  \item{x}{an \eqn{n \times p}{n x p} matrix of the covariates in the observation coordinates. }
-
   \item{y}{a \eqn{n}{n} length vector of response at the observed coordinates. }
+
+  \item{x}{an \eqn{n \times p}{n x p} matrix of the covariates in the observation coordinates. }
 
   \item{sigma.sq}{starting value of sigma square. Default value is 1. }
 
@@ -162,7 +162,7 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-estimation_result <- BRISC_estimation(coords, x, y)
+estimation_result <- BRISC_estimation(coords, y, x)
 estimation_result$Theta ## Gives estimation of covariance model parameters.
 estimation_result$Beta ## Gives estimation of Beta
 

@@ -1,7 +1,7 @@
 Package: BRISC
 Type: Package
 Title: Fast Inference for Large Spatial Datasets using BRISC
-Version: 0.2.1
+Version: 0.3.0
 Authors@R: c(person("Arkajyoti", "Saha", role=c("aut", "cre"), email="arkajyotisaha93@gmail.com"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"), person("Jorge", "Nocedal", role="ctb", email="j-nocedal@northwestern.edu"), person("Naoaki", "Okazaki", role="ctb", email="okazaki@c.titech.ac.jp"))
 Maintainer: Arkajyoti Saha <arkajyotisaha93@gmail.com>
 Author: Arkajyoti Saha [aut, cre],
@@ -17,5 +17,6 @@ BugReports: https://github.com/ArkajyotiSaha/BRISC/issues
 Encoding: UTF-8
 NeedsCompilation: yes
 RoxygenNote: 6.1.1
-Packaged: 2019-08-19 14:00:00 UTC; arkajyotisaha
+Packaged: 2020-08-29 4:29:25 UTC; arkajyotisaha
 Repository: CRAN
+Date/Publication: 2020-08-29 4:34:02 UTC

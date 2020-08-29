@@ -1,8 +1,10 @@
 BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE){
 
 
-  if(missing(BRISC_Out)){stop("error: BRISC_bootstrap expects BRISC_Out\n")}
+  if(missing(BRISC_Out)){stop("error: BRISC_prediction expects BRISC_Out\n")}
 
+  X.0 <- round(X.0, 14)
+  y.0 <- round(y.0, 14)
 
   X <- BRISC_Out$X
   y <- BRISC_Out$y
@@ -65,9 +67,8 @@ BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE
   output$prediction <- out$p.y.0[,1]
 
   result_new <- matrix(0,length(output$prediction),2)
-  for(i in 1:length(result_new[,1])){
-      result_new[i,] <- c(out$p.y.0[,1][i] - 1.96 * out$var.y.0[,1][i], out$p.y.0[,1][i] + 1.96 * out$var.y.0[,1][i])
-  }
+  result_new[,1] <- out$p.y.0[,1] - 1.96 * out$var.y.0[,1]
+  result_new[,2] <- out$p.y.0[,1] + 1.96 * out$var.y.0[,1]
 
   output$prediction.ci <- result_new
   output$prediction.time <- p6 - p5
