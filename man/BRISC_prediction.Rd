@@ -11,18 +11,18 @@
 }
 
 \usage{
-BRISC_prediction(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE)
+BRISC_prediction(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE)
 }
 
 \arguments{
 
   \item{BRISC_Out}{an object of class "BRISC_Out", obtained as an output of \code{BRISC_estimation}. }
 
+  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its structure should be same as that of coords
+                  in \code{BRISC_estimation}. Default value is a column of \eqn{1} to adjust for the mean(intercept). }
+
   \item{X.0}{the covariates for prediction locations. Its Structure should be identical (including intercept) with that of
              covariates provided for estimation purpose in \code{BRISC_estimation}. }
-
-  \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its structure should be same as that of coords
-                  in \code{BRISC_estimation}. }
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
@@ -89,8 +89,8 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-estimation_result <- BRISC_estimation(coords[1:400,], x[1:400,], y[1:400])
-prediction_result <- BRISC_prediction(estimation_result, x[401:500,], coords[401:500,])
+estimation_result <- BRISC_estimation(coords[1:400,], y[1:400], x[1:400,])
+prediction_result <- BRISC_prediction(estimation_result, coords[401:500,], x[401:500,])
 
 }
 

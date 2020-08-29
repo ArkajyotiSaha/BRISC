@@ -31,18 +31,18 @@ BRISC_variogram.ci <- function(BRISC_Out, confidence_est, plot.variogram = FALSE
     for(inti in 1:nrow(confidence_est)){
       res_loc_boot[inti,i] <- variog(x_sept[i], confidence_est[inti,])
     }
-    c(2*estimate_new[i] - quantile(res_loc_boot[,i], c(.975,.025)),estimate_new[i], x_sept[i])
+    c(quantile(res_loc_boot[,i], c(.975,.025)),estimate_new[i], x_sept[i])
   }
 
   variog_plot <- t(sapply(1:length(x_sept), variog_ci_calc, x_sept, confidence_est, estimate_new, res_loc_boot))
-  variog_plot <- variog_plot[,c(4, 1, 3, 2)]
+  variog_plot <- variog_plot[,c(4, 2, 3, 1)]
 
   colnames(variog_plot) <- c("x", "2.5%", "Estimate", "97.5%")
   result_list <- list()
   result_list$variogram <- variog_plot
   result_list
   if(plot.variogram){
-    upper_lim <- max(variog_plot[,4])*1.1+50
+    upper_lim <- max(variog_plot[,4])*1.1
     lower_lim <- min(variog_plot[,2])*0.9
     plot(variog_plot[,1], variog_plot[,2], type="l", col="red", xlab="Lag",
          ylab="Gamma", ylim = c(lower_lim, upper_lim), lwd = 2, lty = 1)

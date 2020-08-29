@@ -37,7 +37,8 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   \item{y}{a \eqn{n}{n} length vector of response at the observed coordinates. }
 
-  \item{x}{an \eqn{n \times p}{n x p} matrix of the covariates in the observation coordinates. }
+  \item{x}{an \eqn{n \times p}{n x p} matrix of the covariates in the observation coordinates. Default value is
+  \eqn{n \times 1}{n x 1} matrix of \eqn{1} to adjust for the mean(intercept). }
 
   \item{sigma.sq}{starting value of sigma square. Default value is 1. }
 

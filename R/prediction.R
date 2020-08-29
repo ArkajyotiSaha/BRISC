@@ -1,10 +1,15 @@
-BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE){
+BRISC_prediction <- function(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE){
 
 
   if(missing(BRISC_Out)){stop("error: BRISC_prediction expects BRISC_Out\n")}
 
+  n <- nrow(coords.0)
+  if(is.null(X.0)){
+    X.0 <- matrix(1, nrow = n, ncol = 1)
+  }
+
+  coords.0 <- round(coords.0, 14)
   X.0 <- round(X.0, 14)
-  y.0 <- round(y.0, 14)
 
   X <- BRISC_Out$X
   y <- BRISC_Out$y
@@ -12,7 +17,6 @@ BRISC_prediction <- function(BRISC_Out, X.0, coords.0, n_omp = 1, verbose = TRUE
   coords <- BRISC_Out$coords
 
   n.omp.threads <- as.integer(n_omp)
-  n <- nrow(X)
   p <- ncol(X)
   Theta <- as.matrix(BRISC_Out$Theta)
   dim(Theta) <- c(length(BRISC_Out$Theta),1)

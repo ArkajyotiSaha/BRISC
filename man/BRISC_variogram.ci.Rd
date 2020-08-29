@@ -65,7 +65,7 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-estimation_result <- BRISC_estimation(coords, x, y)
+estimation_result <- BRISC_estimation(coords, y, x)
 bootstrap_result <- BRISC_bootstrap(estimation_result, n_boot = 10)
 varg <- BRISC_variogram.ci(estimation_result, bootstrap_result$boot.Theta, plot.variogram = TRUE)
 
