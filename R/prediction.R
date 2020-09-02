@@ -1,4 +1,4 @@
-BRISC_prediction <- function(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE){
+BRISC_prediction <- function(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE, tol = 12){
 
 
   if(missing(BRISC_Out)){stop("error: BRISC_prediction expects BRISC_Out\n")}
@@ -8,8 +8,8 @@ BRISC_prediction <- function(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose
     X.0 <- matrix(1, nrow = n, ncol = 1)
   }
 
-  coords.0 <- round(coords.0, 14)
-  X.0 <- round(X.0, 14)
+  coords.0 <- round(coords.0, tol)
+  X.0 <- round(X.0, tol)
 
   X <- BRISC_Out$X
   y <- BRISC_Out$y
