@@ -1,5 +1,5 @@
 BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1,
-                             order = "Sum_coords", cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05, nugget_status = 1
+                             order = "Sum_coords", cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05, nugget_status = 1, tol = 12
 ){
   n <- nrow(coords)
   if(is.null(x)){
@@ -15,9 +15,9 @@ BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, ph
     stop("error: either the coords have more than two columns or then number of rows is different than
          data used in the model formula")
   }
-  coords <- round(coords, 14)
-  x <- round(x, 14)
-  y <- round(y, 14)
+  coords <- round(coords, tol)
+  x <- round(x, tol)
+  y <- round(y, tol)
   if(order != "AMMD" && order != "Sum_coords"){
     stop("error: Please insert a valid ordering scheme choice given by 1 or 2.")
   }
