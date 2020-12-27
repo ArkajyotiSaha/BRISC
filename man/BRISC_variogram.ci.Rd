@@ -13,20 +13,20 @@ BRISC_variogram.ci(BRISC_Out, confidence_est, plot.variogram = FALSE)
 
 \arguments{
 
-  \item{BRISC_Out}{an object of class \code{BRISC_Out}, obtained as an output of \code{BRISC_estimation}. }
+  \item{BRISC_Out}{an object of class "BRISC_Out", obtained as an output of \code{BRISC_estimation}. }
 
-  \item{confidence_est}{bootstrp sample of the Theta parameters, obtained from \code{BRISC_bootstrap}. }
+  \item{confidence_est}{Bootstrp sample of the Theta parameters, obtained from \code{BRISC_bootstrap}. }
 
-  \item{plot.variogram}{if \code{TRUE}, plots the variogram and the associated confidence region. Default is \code{FALSE}. }
+  \item{plot.variogram}{if TRUE, plots the variogram and the associated confidence region. Default is FALSE}
 
 }
 
 \value{
   A list comprising of the following:
 
-  \item{variogram}{variogram and associated confidence region corresponding to lag ranging from 0 to 20, evaluated at 0.01 frequency. }
+  \item{variogram}{Variogram and associated confidence region corresponding to lag ranging from 0 to 20, evaluated at 0.01 frequency. }
 
-  \item{Plot}{plots the Variogram and associated confidence region with legends. }
+  \item{Plot}{Plots the Variogram and associated confidence region with legends. }
 
 }
 

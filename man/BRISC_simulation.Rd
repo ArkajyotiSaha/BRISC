@@ -10,10 +10,8 @@
 }
 
 \usage{
-BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
-                 tau.sq = 0, phi = 1, nu = 1.5, n.neighbors = NULL,
-                 n_omp = 1, cov.model = "exponential", search.type = "tree",
-                 verbose = TRUE, tol = 12)
+BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1, tau.sq = 0, phi = 1, nu = 0.5, n.neighbors = 15,
+                  n_omp = 1, cov.model = "exponential", search.type = "tree", verbose = TRUE)
 }
 
 \arguments{
@@ -21,41 +19,34 @@ BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
   \item{coords}{an \eqn{n \times 2}{n x 2} matrix of the observation
   coordinates in \eqn{R^2} (e.g., easting and northing). }
 
-  \item{sim_number}{number of simulations. Default value is 1. }
+  \item{sim_number}{The number of simulations. Default value is 1. }
 
-  \item{seeds}{seeds which are used in generation of the initial independent data. Default value is \code{NULL}.
+  \item{seeds}{The seeds which are used in generation of the initial independent data. Default value is \code{NULL}.
   If non-null, the number of seeds must be equal to \code{sim_number}. }
 
-  \item{sigma.sq}{value of sigma square. Default value is 1. }
+  \item{sigma.sq}{starting value of sigma square. Default value is 1. }
 
-  \item{tau.sq}{value of tau square. Default value is 0.1. }
+  \item{tau.sq}{starting value of tau square. Default value is 0.1. }
 
-  \item{phi}{value of phi. Default value is 1. }
+  \item{phi}{starting value of phi. Default value is 1. }
 
-  \item{nu}{starting value of nu, only required for matern covariance model. Default value is 1.5. }
+  \item{nu}{starting value of nu, only required for matern covariance model. Default value is 0.5. }
 
   \item{n.neighbors}{number of neighbors used in the NNGP. Default value is 15. }
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
 
-  \item{cov.model}{keyword that specifies the covariance function to be used in modelling the spatial dependence structure
-                   among the observations. Supported keywords are: \code{"exponential"}, \code{"matern"}, \code{"spherical"}, and \code{"gaussian"}
-                   for exponential, Matern, spherical and Gaussian covariance function respectively. Default value is \code{"exponential"}. }
+  \item{cov.model}{Keyword that specifies the covariance function to be used in modelling the spatial dependence structure
+                   among the observations. Supported keywords are: "exponential", "matern", "spherical", and "gaussian"
+                   for exponential, matern, spherical and gaussian covariance function respectively. Default value is "exponential". }
 
-  \item{search.type}{keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
-                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \code{"brute"} and \code{"tree"} provide the same result, though
-                     \code{"tree"} should be faster. \code{"cb"} implements fast code book search described in Ra and Kim (1993)
-                     modified for NNGP. If locations do not have identical coordinate values on the axis used for the nearest neighbor
-                     ordering (see \code{order} argument) then \code{"cb"} and \code{"brute"} should produce identical neighbor sets.
-                     However, if there are identical coordinate values on the axis used for nearest neighbor ordering, then \code{"cb"}
-                     and \code{"brute"} might produce different, but equally valid, neighbor sets, e.g., if data are on a grid.
-                     Default value is \code{"tree"}. }
+  \item{search.type}{Keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
+                     "tree" and "brute". Both of them provide the same result, though "tree" should be faster.
+                     Default value is "tree". }
 
-  \item{verbose}{if \code{TRUE}, model specifications along with information regarding OpenMP support and progress of the algorithm
-                 is printed to the screen. Otherwise, nothing is printed to the screen. Default value is \code{TRUE}. }
-
-  \item{tol}{the input observation coordinates are rounded to this many places after the decimal. The default value is 12. }
+  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm
+                 is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 }
 
 \value{
@@ -67,15 +58,15 @@ BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
 
   \item{cov.model}{the used covariance model. }
 
-  \item{Theta}{parameters of covarinace model. }
+  \item{Theta}{Parameters of covarinace model. }
 
-  \item{input.data}{the \eqn{n \times sim_number} matrix of generated independent data. Here \eqn{i^{th}} column
+  \item{input.data}{The \eqn{n \times sim_number} matrix of generated independent data. Here \eqn{i^{th}} column
   denotes the data corresponding to the \eqn{i^{th}} simulation.  }
 
-  \item{output.data}{the \eqn{n \times sim_number} matrix of generated correlated data. Here \eqn{i^{th}} column
+  \item{output.data}{The \eqn{n \times sim_number} matrix of generated correlated data. Here \eqn{i^{th}} column
   denotes the data corresponding to the \eqn{i^{th}} simulation.  }
 
-  \item{time}{time (in seconds) required after preprocessing data in \code{R}, reported using,
+  \item{time}{time (in seconds) required after preprocessing data in R, reported using,
                           \code{proc.time()}. }
 }
 
@@ -92,9 +83,9 @@ n <- 1000
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 sigma.sq = 1
-phi = 1
+phi = 5
 
-simulation_result <- BRISC_simulation(coords, sim_number = 3)
+simulation_result <- BRISC_simulation(coords, sigma.sq = sigma.sq, phi = phi, sim_number = 3, seeds = c(1,2,3))
 
 }
 

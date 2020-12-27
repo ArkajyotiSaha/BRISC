@@ -11,15 +11,15 @@
 }
 
 \usage{
-BRISC_prediction(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE, tol = 12)
+BRISC_prediction(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE)
 }
 
 \arguments{
 
-  \item{BRISC_Out}{an object of class \code{BRISC_Out}, obtained as an output of \code{BRISC_estimation}. }
+  \item{BRISC_Out}{an object of class "BRISC_Out", obtained as an output of \code{BRISC_estimation}. }
 
   \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its structure should be same as that of coords
-                  in \code{BRISC_estimation}. Default value is a column of \eqn{1} to adjust for the mean (intercept). }
+                  in \code{BRISC_estimation}. Default value is a column of \eqn{1} to adjust for the mean(intercept). }
 
   \item{X.0}{the covariates for prediction locations. Its Structure should be identical (including intercept) with that of
              covariates provided for estimation purpose in \code{BRISC_estimation}. }
@@ -27,11 +27,8 @@ BRISC_prediction(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE, tol
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
 
-  \item{verbose}{if \code{TRUE}, model specifications along with information regarding OpenMP support and progress of the
-                 algorithm is printed to the screen. Otherwise, nothing is printed to the screen. Default value is \code{TRUE}. }
-
-  \item{tol}{the coordinates and the covariates corresponding to the prediction locations are rounded to this many places after the decimal.
-             The default value is 12. }
+  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the
+                 algorithm is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
 
 }
 
@@ -42,7 +39,7 @@ BRISC_prediction(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE, tol
 
   \item{prediction.ci}{confidence intervals corresponding to the predictions. }
 
-   \item{prediction.time}{time (in seconds) required to perform the prediction after preprocessing data in \code{R}, reported using
+   \item{prediction.time}{time (in seconds) required to perform the prediction after preprocessing data in R, reported using
                           \code{proc.time()}. }
 }
 
@@ -82,7 +79,7 @@ beta <- c(1,5)
 x <- cbind(rnorm(n), rnorm(n))
 
 sigma.sq = 1
-phi = 1
+phi = 5
 tau.sq = 0.1
 
 B <- as.matrix(beta)
