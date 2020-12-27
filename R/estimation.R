@@ -1,6 +1,9 @@
-BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 0.5, n.neighbors = 15, n_omp = 1,
-                             order = "Sum_coords", cov.model = "exponential", search.type = "tree", verbose = TRUE, eps = 2e-05, nugget_status = 1, tol = 12
+BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1, nu = 1.5, n.neighbors = 15, n_omp = 1,
+                             order = "Sum_coords", cov.model = "exponential", search.type = "tree", stabilization = NULL,
+                             verbose = TRUE, eps = 2e-05, nugget_status = 1, tol = 12
 ){
+  if(ncol(x) == 1) warning('The ordering of inputs x (covariates) and y (response) in BRISC_estimation has been changed BRISC 1.0.0 onwards.
+Please check the new documentation with ?BRISC_estimation.')
   n <- nrow(coords)
   if(is.null(x)){
     x <- matrix(1, nrow = n, ncol = 1)
@@ -12,9 +15,17 @@ BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, ph
   if(!is.matrix(coords)){stop("error: coords must n-by-2 matrix of xy-coordinate locations")}
   if(order == "AMMD" && length(y) < 65){stop("error: Number of data points must be atleast 65 to use AMMD")}
   if(ncol(coords) != 2 || nrow(coords) != n){
-    stop("error: either the coords have more than two columns or then number of rows is different than
+    stop("error: either the coords have more than two columns or the number of rows is different than
          data used in the model formula")
   }
+  if(is.matrix(y) & ncol(as.matrix(y)) > 1)
+    {stop("error: BRISC handles only univariate response. You have used a y (response) with more than one column.
+          The ordering of inputs x (covariates) and y (response) in BRISC_estimation has been changed BRISC 0.2.0 onwards.
+          Did you mean x (covaiates) instead of y (response) by the multivariatte input?
+          Please check the new documentation with ?BRISC_estimation.")
+
+  }
+
   coords <- round(coords, tol)
   x <- round(x, tol)
   y <- round(y, tol)
@@ -46,6 +57,32 @@ BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, ph
   storage.mode(cov.model.indx) <- "integer"
 
 
+  ##Stabilization
+  if(is.null(stabilization)){
+    if(cov.model == "exponential"){
+      stabilization = FALSE
+    }
+    if(cov.model != "exponential"){
+      stabilization = TRUE
+    }
+  }
+
+  if(!isTRUE(stabilization)){
+    if(cov.model != "exponential"){
+      warning('We recommend using stabilization for spherical, Matern and Gaussian covariance model')
+    }
+  }
+
+  if(isTRUE(stabilization)){
+    taus <- 10^-6 * sigma.sq
+    artificial_noise <- sqrt(taus) * rnorm(n)
+    y <- y + artificial_noise
+    tau.sq <- tau.sq + taus
+    fix_nugget <- 1
+    if(verbose == TRUE) cat(paste(("----------------------------------------"), collapse="   "), "\n"); cat(paste(("\tUsing Stabilization"), collapse="   "), "\n"); cat(paste(("----------------------------------------"), collapse="   "), "\n")
+  }
+
+
   ##Initial values
   if(cov.model!="matern"){
     initiate <- c(sigma.sq, tau.sq, phi)
@@ -65,7 +102,7 @@ BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, ph
 
 
   ##Search type
-  search.type.names <- c("brute", "tree")
+  search.type.names <- c("brute", "tree", "cb")
   if(!search.type %in% search.type.names){
     stop("error: specified search.type '",search.type,"' is not a valid option; choose from ", paste(search.type.names, collapse=", ", sep="") ,".")
   }
@@ -96,7 +133,7 @@ BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, ph
 
 
   ##estimtion
-  result <- .Call("BRISC_estimatecpp", y, X, p, n, n.neighbors, coords, cov.model.indx, alpha.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, eps, fix_nugget)
+  result <- .Call("BRISC_estimatecpp", y, X, p, n, n.neighbors, coords, cov.model.indx, alpha.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, eps, fix_nugget, PACKAGE = "BRISC")
 
   p2 <- proc.time()
 

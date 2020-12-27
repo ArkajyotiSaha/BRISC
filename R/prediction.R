@@ -64,7 +64,7 @@ BRISC_prediction <- function(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose
   p5 <- proc.time()
 
   out <- .Call("BRISC_predictioncpp", X, y, coords, n, p, n.neighbors, X.0, coords.0, q, nn.indx.0,
-               Beta, Theta, cov.model.indx, n.omp.threads, verbose)
+               Beta, Theta, cov.model.indx, n.omp.threads, verbose, PACKAGE = "BRISC")
   p6 <- proc.time()
 
   output <- list()
