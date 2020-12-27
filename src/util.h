@@ -26,6 +26,8 @@ double spCor(double &D, double &phi, double &nu, int &covModel, double *bk);
 
 double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nnIndxLU);
 
+void mkNNIndxCB(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nnIndxLU);
+
 //trees
 struct Node{
 	int index; // which point I am

@@ -58,16 +58,15 @@ void mkNNIndx(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nn
     nnIndxLU[n+i] = iNN;
     if(i != 0){
       for(j = 0; j < i; j++){
-	d = dist2(coords[i], coords[n+i], coords[j], coords[n+j]);
-	if(d < nnDist[iNNIndx+iNN-1]){
-	  nnDist[iNNIndx+iNN-1] = d;
-	  nnIndx[iNNIndx+iNN-1] = j;
-	  rsort_with_index(&nnDist[iNNIndx], &nnIndx[iNNIndx], iNN);
-	}
+        d = dist2(coords[i], coords[n+i], coords[j], coords[n+j]);
+        if(d < nnDist[iNNIndx+iNN-1]){
+          nnDist[iNNIndx+iNN-1] = d;
+          nnIndx[iNNIndx+iNN-1] = j;
+          rsort_with_index(&nnDist[iNNIndx], &nnIndx[iNNIndx], iNN);
+        }
       }
     }
   }
-
 }
 
 std::string getCorName(int i){
@@ -146,6 +145,135 @@ double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nn
 
   return(q);
 }
+
+///////////////////////////////////////////////////////////////////
+//code book
+///////////////////////////////////////////////////////////////////
+
+//Description: using the fast mean-distance-ordered nn search by Ra and Kim 1993
+//Input:
+//ui = is the index for which we need the m nearest neighbors
+//m = number of nearest neighbors
+//n = number of observations, i.e., length of u
+//sIndx = the NNGP ordering index of length n that is pre-sorted by u
+//u = x+y vector of coordinates assumed sorted on input
+//rSIndx = vector or pointer to a vector to store the resulting nn sIndx (this is at most length m for ui >= m)
+//rNNDist = vector or point to a vector to store the resulting nn Euclidean distance (this is at most length m for ui >= m)
+
+
+double dmi(double *x, double *c, int inc){
+  return pow(x[0]+x[inc]-c[0]-c[inc], 2);
+}
+
+double dei(double *x, double *c, int inc){
+  return pow(x[0]-c[0],2)+pow(x[inc]-c[inc],2);
+}
+
+void fastNN(int m, int n, double *coords, int ui, double *u, int *sIndx, int *rSIndx, double *rSNNDist){
+
+  int i,j,k;
+  bool up, down;
+  double dm, de;
+
+  //rSNNDist will hold de (i.e., squared Euclidean distance) initially.
+  for(i = 0; i < m; i++){
+    rSNNDist[i] = std::numeric_limits<double>::infinity();
+  }
+
+  i = j = ui;
+
+  up = down = true;
+
+  while(up || down){
+
+    if(i == 0){
+      down = false;
+    }
+
+    if(j == (n-1)){
+      up = false;
+    }
+
+    if(down){
+
+      i--;
+
+      dm = dmi(&coords[sIndx[ui]], &coords[sIndx[i]], n);
+
+      if(dm > 2*rSNNDist[m-1]){
+        down = false;
+
+      }else{
+        de = dei(&coords[sIndx[ui]], &coords[sIndx[i]], n);
+
+        if(de < rSNNDist[m-1] && sIndx[i] < sIndx[ui]){
+          rSNNDist[m-1] = de;
+          rSIndx[m-1] = sIndx[i];
+          rsort_with_index(rSNNDist, rSIndx, m);
+        }
+
+      }
+    }//end down
+
+    if(up){
+
+      j++;
+
+      dm = dmi(&coords[sIndx[ui]], &coords[sIndx[j]], n);
+
+      if(dm > 2*rSNNDist[m-1]){
+        up = false;
+
+      }else{
+        de = dei(&coords[sIndx[ui]], &coords[sIndx[j]], n);
+
+        if(de < rSNNDist[m-1] && sIndx[j] < sIndx[ui]){
+          rSNNDist[m-1] = de;
+          rSIndx[m-1] = sIndx[j];
+          rsort_with_index(rSNNDist, rSIndx, m);
+        }
+
+      }
+
+    }//end up
+
+  }
+
+  for(i = 0; i < m; i++){
+    rSNNDist[i] = sqrt(rSNNDist[i]);
+  }
+
+  return;
+}
+
+
+void mkNNIndxCB(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nnIndxLU){
+  int i, iNNIndx, iNN;
+
+  int *sIndx = new int[n];
+  double *u = new double[n];
+
+  for(i = 0; i < n; i++){
+    sIndx[i] = i;
+    u[i] = coords[i]+coords[n+i];
+  }
+
+  rsort_with_index(u, sIndx, n);
+
+  //make nnIndxLU and fill nnIndx and d
+#ifdef _OPENMP
+#pragma omp parallel for private(iNNIndx, iNN)
+#endif
+  for(i = 0; i < n; i++){ //note this i indexes the u vector
+    getNNIndx(sIndx[i], m, iNNIndx, iNN);
+    nnIndxLU[sIndx[i]] = iNNIndx;
+    nnIndxLU[n+sIndx[i]] = iNN;
+    fastNN(iNN, n, coords, i, u, sIndx, &nnIndx[iNNIndx], &nnDist[iNNIndx]);
+  }
+}
+
+
+
 
 //trees
 Node *miniInsert(Node *Tree, double *coords, int index, int d,int n){
