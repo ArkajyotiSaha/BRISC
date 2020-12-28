@@ -28,7 +28,7 @@ BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
 
   \item{sigma.sq}{value of sigma square. Default value is 1. }
 
-  \item{tau.sq}{value of tau square. Default value is 0.1. }
+  \item{tau.sq}{value of tau square. Default value is 0. }
 
   \item{phi}{value of phi. Default value is 1. }
 
