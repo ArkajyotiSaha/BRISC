@@ -27,7 +27,7 @@ BRISC_decorrelation(coords, sim, sigma.sq = 1, tau.sq = 0, phi = 1,
 
   \item{sigma.sq}{value of sigma square. Default value is 1. }
 
-  \item{tau.sq}{value of tau square. Default value is 0.1. }
+  \item{tau.sq}{value of tau square. Default value is 0. }
 
   \item{phi}{value of phi. Default value is 1. }
 
