@@ -11,8 +11,10 @@
 }
 
 \usage{
-BRISC_decorrelation(coords, sim, sigma.sq = 1, tau.sq = 0, phi = 1, nu = 0.5, n.neighbors = 15,
-                  n_omp = 1, cov.model = "exponential", search.type = "tree", verbose = TRUE)
+BRISC_decorrelation(coords, sim, sigma.sq = 1, tau.sq = 0, phi = 1,
+                    nu = 1.5, n.neighbors = NULL, n_omp = 1,
+                    cov.model = "exponential", search.type = "tree",
+                    stabilization = NULL, verbose = TRUE, tol = 12)
 }
 
 \arguments{
@@ -23,38 +25,51 @@ BRISC_decorrelation(coords, sim, sigma.sq = 1, tau.sq = 0, phi = 1, nu = 0.5, n.
   \item{sim}{an \eqn{n \times k}{n x k} matrix of the \eqn{k}{k} many \eqn{n \times 1}{n x 1} vectors
   from which the decorrelated data are calculated (see Details below). }
 
-  \item{sigma.sq}{starting value of sigma square. Default value is 1. }
+  \item{sigma.sq}{value of sigma square. Default value is 1. }
 
-  \item{tau.sq}{starting value of tau square. Default value is 0.1. }
+  \item{tau.sq}{value of tau square. Default value is 0.1. }
 
-  \item{phi}{starting value of phi. Default value is 1. }
+  \item{phi}{value of phi. Default value is 1. }
 
-  \item{nu}{starting value of nu, only required for matern covariance model. Default value is 0.5. }
+  \item{nu}{value of nu, only required for Matern covariance model. Default value is 1.5. }
 
-  \item{n.neighbors}{number of neighbors used in the NNGP. Default value is 15. }
+  \item{n.neighbors}{number of neighbors used in the NNGP. Default value is \eqn{max(100, n -1)}. We suggest a high value of
+                     n.neighbors for lower value of phi. }
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
 
-  \item{cov.model}{Keyword that specifies the covariance function to be used in modelling the spatial dependence structure
-                   among the observations. Supported keywords are: "exponential", "matern", "spherical", and "gaussian"
-                   for exponential, matern, spherical and gaussian covariance function respectively. Default value is "exponential". }
+\item{cov.model}{keyword that specifies the covariance function to be used in modelling the spatial dependence structure
+                 among the observations. Supported keywords are: \code{"exponential"}, \code{"matern"}, \code{"spherical"}, and \code{"gaussian"}
+                 for exponential, Matern, spherical and Gaussian covariance function respectively. Default value is \code{"exponential"}. }
 
-  \item{search.type}{Keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
-                     "tree" and "brute". Both of them provide the same result, though "tree" should be faster.
-                     Default value is "tree". }
+  \item{search.type}{keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
+                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \code{"brute"} and \code{"tree"} provide the same result, though
+                     \code{"tree"} should be faster. \code{"cb"} implements fast code book search described in Ra and Kim (1993)
+                     modified for NNGP. If locations do not have identical coordinate values on the axis used for the nearest neighbor
+                     ordering (see \code{order} argument) then \code{"cb"} and \code{"brute"} should produce identical neighbor sets.
+                     However, if there are identical coordinate values on the axis used for nearest neighbor ordering, then \code{"cb"}
+                     and \code{"brute"} might produce different, but equally valid, neighbor sets, e.g., if data are on a grid.
+                     Default value is \code{"tree"}. }
 
-  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm
-                 is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
+  \item{stabilization}{when the correlated data are generated from a very smooth covarince model (lower values of phi for spherical and Gaussian
+                      covariance and low phi and high nu for Matern covarinace), the decorrelation process may fail due to computational
+                      instability. If \code{stabilization = TRUE}, performs stabilization by adding a white noise to the data with
+                      nugget \code{tau.sq = } \code{sigma.sq} * 1e-06. Default value is \code{TRUE} for \code{cov.model = "expoenential"} and \code{FALSE} otherwise. }
+
+  \item{verbose}{if \code{TRUE}, model specifications along with information regarding OpenMP support and progress of the algorithm
+                 is printed to the screen. Otherwise, nothing is printed to the screen. Default value is \code{TRUE}. }
+
+  \item{tol}{the input observation coordinates are rounded to this many places after the decimal. The default value is 12. }
 
 }
 
 \details{
-Denote \eqn{h} be the input \code{sim}. Let \eqn{S} be the precision matrix associated with the covariance model determined by the \eqn{cov.model} and model parameters. Then \code{BRISC_decorrelation} calculates \eqn{g}, where \eqn{g} is given as follows:
+Denote \eqn{h} be the input \code{sim}. Let \eqn{\Sigma} be the covariance matrix associated with the covariance model determined by the \eqn{cov.model} and model parameters. Then \code{BRISC_decorrelation} calculates \eqn{g}, where \eqn{g} is given as follows:
 \deqn{
-T^0.5 h = g
+S ^{-0.5} h = g
 }
-where, \eqn{T^0.5} is a sparse approximation of the cholesky factor \eqn{S^0.5} of the precision matrix \eqn{S}, obtained from NNGP.
+where, \eqn{S ^{-0.5}} is a sparse approximation of the cholesky factor \eqn{\Sigma ^{-0.5}} of the precision matrix \eqn{\Sigma ^{-1}}, obtained from NNGP.
 }
 
 \value{
@@ -66,13 +81,13 @@ where, \eqn{T^0.5} is a sparse approximation of the cholesky factor \eqn{S^0.5} 
 
   \item{cov.model}{the used covariance model. }
 
-  \item{Theta}{Parameters of covarinace model. }
+  \item{Theta}{parameters of covarinace model; accounts for \code{stabilization}. }
 
-  \item{input.data}{The matrix \code{sim}. }
+  \item{input.data}{if \code{stabilization = FALSE}, return the matrix \code{sim}. If \code{stabilization = TRUE}, returns \code{sim} + used white noise in stabilization process. }
 
-  \item{output.data}{The output matrix \eqn{g} in Details. }
+  \item{output.data}{the output matrix \eqn{g} in Details. }
 
-  \item{time}{time (in seconds) required after preprocessing data in R, reported using,
+  \item{time}{time (in seconds) required after preprocessing data in \code{R}, reported using,
                           \code{proc.time()}. }
 }
 
@@ -95,19 +110,26 @@ where, \eqn{T^0.5} is a sparse approximation of the cholesky factor \eqn{S^0.5} 
 }
 
 \examples{
+rmvn <- function(n, mu = 0, V = matrix(1)){
+  p <- length(mu)
+  if(any(is.na(match(dim(V),p))))
+    stop("Dimension not right!")
+  D <- chol(V)
+  t(matrix(rnorm(n*p), ncol=p)\%*\%D + rep(mu,rep(n,p)))
+}
 
 set.seed(1)
 n <- 1000
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 sigma.sq = 1
-phi = 5
+phi = 1
 
 set.seed(1)
 D <- as.matrix(dist(coords))
 R <- exp(-phi*D)
 sim <- rmvn(3, rep(0,n), sigma.sq*R)
-decorrelation_result <- BRISC_decorrelation(coords, sigma.sq = sigma.sq, phi = phi, sim = sim)
+decorrelation_result <- BRISC_decorrelation(coords, sim = sim)
 }
 
 \keyword{model}

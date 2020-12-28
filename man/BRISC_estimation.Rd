@@ -25,9 +25,10 @@
 
 \usage{
 BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
-                 nu = 0.5, n.neighbors = 15, n_omp = 1, order = "Sum_coords",
+                 nu = 1.5, n.neighbors = 15, n_omp = 1, order = "Sum_coords",
                  cov.model = "exponential", search.type = "tree",
-                 verbose = TRUE, eps = 2e-05, nugget_status = 1)
+                 stabilization = NULL, verbose = TRUE, eps = 2e-05,
+                 nugget_status = 1, tol = 12)
 }
 
 \arguments{
@@ -46,31 +47,44 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   \item{phi}{starting value of phi. Default value is 1. }
 
-  \item{nu}{starting value of nu, only required for matern covariance model. Default value is 0.5. }
+  \item{nu}{starting value of nu, only required for matern covariance model. Default value is 1.5. }
 
   \item{n.neighbors}{number of neighbors used in the NNGP. Default value is 15. }
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
 
-  \item{order}{Keyword that specifies the ordering scheme to be used in ordering the observations. Supported keywords are:
-               "AMMD" and "Sum_coords" for approximate Maximum Minimum Distance and sum of coordinate based ordering,
-               respectively. Default value is "Sum_coords". \eqn{n > 65} is required for "AMMD".}
+  \item{order}{keyword that specifies the ordering scheme to be used in ordering the observations. Supported keywords are:
+               \code{"AMMD"} and \code{"Sum_coords"} for approximate Maximum Minimum Distance and sum of coordinate based ordering,
+               respectively. Default value is \code{"Sum_coords"}. \eqn{n > 65} is required for \code{"AMMD"}.}
 
-  \item{cov.model}{Keyword that specifies the covariance function to be used in modelling the spatial dependence structure
-                   among the observations. Supported keywords are: "exponential", "matern", "spherical", and "gaussian"
-                   for exponential, matern, spherical and gaussian covariance function respectively. Default value is "exponential". }
+  \item{cov.model}{keyword that specifies the covariance function to be used in modelling the spatial dependence structure
+                   among the observations. Supported keywords are: \code{"exponential"}, \code{"matern"}, \code{"spherical"}, and \code{"gaussian"}
+                   for exponential, Matern, spherical and Gaussian covariance function respectively. Default value is "exponential". }
 
-  \item{search.type}{Keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
-                     "tree" and "brute". Both of them provide the same result, though "tree" should be faster.
-                     Default value is "tree". }
+  \item{search.type}{keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
+                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \code{"brute"} and \code{"tree"} provide the same result, though
+                     \code{"tree"} should be faster. \code{"cb"} implements fast code book search described in Ra and Kim (1993)
+                     modified for NNGP. If locations do not have identical coordinate values on the axis used for the nearest neighbor
+                     ordering (see \code{order} argument) then \code{"cb"} and \code{"brute"} should produce identical neighbor sets.
+                     However, if there are identical coordinate values on the axis used for nearest neighbor ordering, then \code{"cb"}
+                     and \code{"brute"} might produce different, but equally valid, neighbor sets, e.g., if data are on a grid.
+                     Default value is \code{"tree"}. }
 
-  \item{verbose}{if TRUE, model specifications along with information regarding OpenMP support and progress of the algorithm
-                 is printed to the screen. Otherwise, nothing is printed to the screen. Default value is FALSE. }
+  \item{stabilization}{When the spatial errors are generated from a very smooth covarince model (lower values of phi for spherical and Gaussian
+                      covariance and low phi and high nu for Matern covarinace), the estimation process may fail due to computational
+                      instability. If \code{stabilization = TRUE}, performs stabilization by adding a white noise to the reordered data with
+                      nugget \code{tau.sq = } \code{sigma.sq} * 1e-06. Estimation is performed on this new data with \code{nugget_status = 1}
+                      (see \code{nugget_status} argument below). Default value is \code{TRUE} for \code{cov.model = "expoenential"} and \code{FALSE} otherwise. }
 
-  \item{eps}{The tolerance to be used in centred finite difference approximation of derivatives. Default value is 2e-05. }
+  \item{verbose}{if \code{TRUE}, model specifications along with information regarding OpenMP support and progress of the algorithm
+                 is printed to the screen. Otherwise, nothing is printed to the screen. Default value is \code{TRUE}. }
 
-  \item{nugget_status}{If nugget_status = 0, tau square is fixed to 0, if nugget_status = 1 tau square is variable and is estimated. Default value is 1. }
+  \item{eps}{tolerance to be used in centred finite difference approximation of derivatives. Default value is 2e-05. }
+
+  \item{nugget_status}{if \code{nugget_status = 0}, \code{tau.sq} is fixed to 0, if \code{nugget_status = 1} \code{tau.sq} is estimated. Default value is 1. }
+
+  \item{tol}{the input observation coordinates, response and the covariates are rounded to this many places after the decimal. The default value is 12. }
 }
 
 \value{
@@ -81,7 +95,7 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   \item{coords}{the matrix \code{coords[ord,]}. }
 
-  \item{y}{the vector \code{y[ord]}. }
+  \item{y}{If \code{stabilization = FALSE}, returns the vector \code{y[ord]}. If \code{stabilization = TRUE}, returns \code{y[ord]} + used white noise in stabilization process. }
 
   \item{X}{the matrix \code{x[ord,,drop=FALSE]}. }
 
@@ -89,15 +103,15 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   \item{cov.model}{the used covariance model. }
 
-  \item{eps}{value of used \code{eps}. }
+  \item{eps}{value of used \code{eps} for approximate derivation. Default value is 2e-05. }
 
-  \item{init}{Initial values of the parameters of the covariance model. }
+  \item{init}{initial values of the parameters of the covariance model; accounts for \code{stabilization}. }
 
   \item{Beta}{estimate of beta. }
 
   \item{Theta}{estimate of parameters of covarinace model. }
 
-   \item{estimation.time}{time (in seconds) required to perform the model fitting after ordering and preprocessing data in R,
+   \item{estimation.time}{time (in seconds) required to perform the model fitting after ordering and preprocessing data in \code{R},
                           reported using \code{proc.time()}. }
 
   \item{BRISC_Object}{Object required for bootstrap and prediction. }
@@ -124,9 +138,13 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
   Okazaki N. libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno
   (L-BFGS), http://www.chokkan.org/software/liblbfgs/ .
 
-  Andrew Finley, Abhirup Datta and Sudipto Banerjee (2017). spNNGP: Spatial Regression Models for Large
-  Datasets using Nearest Neighbor Gaussian Processes. R package version 0.1.1.
+  Andrew Finley, Abhirup Datta and Sudipto Banerjee (2020). spNNGP: Spatial Regression
+  Models for Large Datasets using Nearest Neighbor Gaussian Processes. R package version 0.1.4.
   https://CRAN.R-project.org/package=spNNGP
+
+  Ra, S. W., & Kim, J. K. (1993). A fast mean-distance-ordered partial codebook search algorithm
+  for image vector quantization. IEEE Transactions on Circuits and Systems II: Analog and Digital
+  Signal Processing, 40(9), 576-579.
 
 }
 
@@ -153,7 +171,7 @@ beta <- c(1,5)
 x <- cbind(rnorm(n), rnorm(n))
 
 sigma.sq = 1
-phi = 5
+phi = 1
 tau.sq = 0.1
 
 B <- as.matrix(beta)
