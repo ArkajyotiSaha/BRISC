@@ -10,7 +10,7 @@ Author: Arkajyoti Saha [aut, cre],
   Naoaki Okazaki [ctb]
 Depends: R (>= 3.3.0), RANN, parallel, stats, rdist, matrixStats,
         pbapply, graphics
-Description: Fits Bootstrap with univariate spatial regression models using Bootstrap for Rapid Inference on Spatial Covariances (BRISC) for large datasets using Nearest Neighbor Gaussian Processes detailed in Saha and Datta (2018) <doi:10.1002/sta4.184>.
+Description: Fits bootstrap with univariate spatial regression models using Bootstrap for Rapid Inference on Spatial Covariances (BRISC) for large datasets using nearest neighbor Gaussian processes detailed in Saha and Datta (2018) <doi:10.1002/sta4.184>.
 License: GPL (>= 2)
 URL: https://github.com/ArkajyotiSaha/BRISC
 BugReports: https://github.com/ArkajyotiSaha/BRISC/issues
