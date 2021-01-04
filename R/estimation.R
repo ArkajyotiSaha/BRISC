@@ -2,13 +2,12 @@ BRISC_estimation <- function(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, ph
                              order = "Sum_coords", cov.model = "exponential", search.type = "tree", stabilization = NULL,
                              verbose = TRUE, eps = 2e-05, nugget_status = 1, tol = 12
 ){
-  if(ncol(x) == 1) warning('The ordering of inputs x (covariates) and y (response) in BRISC_estimation has been changed BRISC 1.0.0 onwards.
-Please check the new documentation with ?BRISC_estimation.')
   n <- nrow(coords)
   if(is.null(x)){
     x <- matrix(1, nrow = n, ncol = 1)
   }
   p <- ncol(x)
+  if(ncol(x) == 1) warning('The ordering of inputs x (covariates) and y (response) in BRISC_estimation has been changed BRISC 1.0.0 onwards. Please check the new documentation with ?BRISC_estimation.')
   ##Coords and ordering
   if(nugget_status == 0){fix_nugget = 0}
   if(nugget_status == 1){fix_nugget = 1}
