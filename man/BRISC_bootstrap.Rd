@@ -8,28 +8,29 @@
   (Saha & Datta, 2018). The optimization is performed with C library of limited-memory BFGS libLBFGS: a library of
   Limited-memory Broyden-Fletcher-Goldfarb-Shanno (L-BFGS), http://www.chokkan.org/software/liblbfgs/ (Naoaki Okazaki).
   For user convenience the soure codes of the package libLBFGS are provided in the package. Some code blocks are borrowed
-  from the R package: spNNGP: Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes
+  from the R package: spNNGP: Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes \cr
   https://CRAN.R-project.org/package=spNNGP .
 }
 
 \usage{
 BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
-                init = "Initial", verbose = TRUE, nugget_status = 1)
+                init = "Initial", verbose = TRUE,
+                nugget_status = 1)
 }
 
 \arguments{
 
-  \item{BRISC_Out}{an object of class \code{BRISC_Out}, obtained as an output of \code{BRISC_estimation}. }
+  \item{BRISC_Out}{an object of class \code{BRISC_Out}, obtained as an output of \cr \code{BRISC_estimation}. }
 
   \item{n_boot}{number of bootstrap samples. Default value is 100. }
 
-  \item{h}{Number of core to be used in parallel computing setup for bootstrap samples. If \code{h = 1}, there is no parallelization.
+  \item{h}{number of core to be used in parallel computing setup for bootstrap samples. If \code{h = 1}, there is no parallelization.
            Default value is 1. }
 
   \item{n_omp}{number of threads to be used, value can be more than 1 if source code is compiled with OpenMP support.
                Default is 1. }
 
-  \item{init}{Keyword that specifies initialization scheme to be used. Supported keywords are: \code{"Initial"} and \code{"Estimate"}
+  \item{init}{keyword that specifies initialization scheme to be used. Supported keywords are: \code{"Initial"} and \code{"Estimate"}
               for initialization of parameter values for bootstrap samples with initial values used in \code{BRISC_estimate}
               and estimated values of parameters in \code{BRISC_estimate} respectively. }
 
@@ -57,7 +58,7 @@ BRISC_bootstrap(BRISC_Out, n_boot = 100, h = 1, n_omp = 1,
   covariances. Stat, e184, DOI: 10.1002/sta4.184.
 
   Okazaki N. libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno
-  (L-BFGS), http://www.chokkan.org/software/liblbfgs/ .
+  (L-BFGS), \cr http://www.chokkan.org/software/liblbfgs/ .
 
   Andrew Finley, Abhirup Datta and Sudipto Banerjee (2017). spNNGP: Spatial Regression Models for Large
   Datasets using Nearest Neighbor Gaussian Processes. R package version 0.1.1.

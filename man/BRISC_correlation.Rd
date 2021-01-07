@@ -13,8 +13,9 @@
 \usage{
 BRISC_correlation(coords, sim, sigma.sq = 1, tau.sq = 0, phi = 1,
                   nu = 1.5, n.neighbors = NULL, n_omp = 1,
-                  cov.model = "exponential", search.type = "tree",
-                  stabilization = NULL, verbose = TRUE, tol = 12)
+                  cov.model = "exponential",
+                  search.type = "tree", stabilization = NULL,
+                  verbose = TRUE, tol = 12)
 }
 
 \arguments{
@@ -27,7 +28,7 @@ BRISC_correlation(coords, sim, sigma.sq = 1, tau.sq = 0, phi = 1,
 
   \item{sigma.sq}{value of sigma square. Default value is 1. }
 
-  \item{tau.sq}{value of tau square. Default value is 0. }
+  \item{tau.sq}{value of tau square. Default value is 0.1. }
 
   \item{phi}{value of phi. Default value is 1. }
 
@@ -44,7 +45,7 @@ BRISC_correlation(coords, sim, sigma.sq = 1, tau.sq = 0, phi = 1,
                    for exponential, Matern, spherical and Gaussian covariance function respectively. Default value is \code{"exponential"}. }
 
   \item{search.type}{keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
-                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \code{"brute"} and \code{"tree"} provide the same result, though
+                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \cr \code{"brute"} and \code{"tree"} provide the same result, though
                      \code{"tree"} should be faster. \code{"cb"} implements fast code book search described in Ra and Kim (1993)
                      modified for NNGP. If locations do not have identical coordinate values on the axis used for the nearest neighbor
                      ordering (see \code{order} argument) then \code{"cb"} and \code{"brute"} should produce identical neighbor sets.
@@ -87,7 +88,7 @@ where, \eqn{S ^{-0.5}} is a sparse approximation of the cholesky factor \eqn{\Si
 
   \item{output.data}{the output matrix \eqn{h} in Details. }
 
-  \item{time}{time (in seconds) required after preprocessing data in R, reported using,
+  \item{time}{time (in seconds) required after preprocessing data in R, \cr reported using,
                           \code{proc.time()}. }
 }
 
@@ -120,7 +121,8 @@ phi = 1
 
 set.seed(1)
 sim <- matrix(rnorm(3*n),n, 3)
-correlation_result <- BRISC_correlation(coords, sigma.sq = sigma.sq, phi = phi, sim = sim)
+correlation_result <- BRISC_correlation(coords, sigma.sq = sigma.sq,
+                                        phi = phi, sim = sim)
 }
 
 \keyword{model}

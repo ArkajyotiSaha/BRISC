@@ -7,16 +7,16 @@
   spatial data using Vecchia's approximate likelihood (Vecchia, 1988). \code{BRISC_estimation}
   uses the sparse Cholesky representation of Vecchia’s likelihood developed in Datta et al., 2016.
   The Maximum Likelihood Estimates (MLE) of the parameters are used later for calculating the
-  confidence interval via the \code{BRISC_bootstrap} (BRISC, Saha & Datta, 2018). We recommend
+  confidence interval via the \code{BRISC_bootstrap} (BRISC, Saha & Datta, 2018). \cr We recommend
   using \code{BRISC_estimation} followed by \code{BRISC_bootstrap} to obtain the cofidence
   intervals for the model parameters.
 
   The optimization is performed with C library of limited-memory BFGS
-  libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno (L-BFGS),
+  libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno (L-BFGS), \cr
   http://www.chokkan.org/software/liblbfgs/ (Naoaki Okazaki). For user convenience
   the soure codes of the package libLBFGS are provided in the package. The code for
   the coordinate ordering method, approximate Maximum Minimum Distance (Guinness, 2018)
-  is available in https://github.com/joeguinness/gp_reorder/tree/master/R and is adopted
+  is available in \cr https://github.com/joeguinness/gp_reorder/tree/master/R and is adopted
   with minor modification. Some code blocks are borrowed from the R package: spNNGP:
   Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes
   https://CRAN.R-project.org/package=spNNGP .
@@ -24,10 +24,15 @@
 }
 
 \usage{
-BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
-                 nu = 1.5, n.neighbors = 15, n_omp = 1, order = "Sum_coords",
-                 cov.model = "exponential", search.type = "tree",
-                 stabilization = NULL, verbose = TRUE, eps = 2e-05,
+BRISC_estimation(coords, y, x = NULL, sigma.sq = 1,
+                 tau.sq = 0.1, phi = 1,
+                 nu = 1.5, n.neighbors = 15,
+                 n_omp = 1, order = "Sum_coords",
+                 cov.model = "exponential",
+                 search.type = "tree",
+                 stabilization = NULL,
+                 pred.stabilization = 1e-8,
+                 verbose = TRUE, eps = 2e-05,
                  nugget_status = 1, tol = 12)
 }
 
@@ -36,7 +41,7 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
   \item{coords}{an \eqn{n \times 2}{n x 2} matrix of the observation
   coordinates in \eqn{R^2}{R^2} (e.g., easting and northing). }
 
-  \item{y}{a \eqn{n}{n} length vector of response at the observed coordinates. }
+  \item{y}{an \eqn{n}{n} length vector of response at the observed coordinates. }
 
   \item{x}{an \eqn{n \times p}{n x p} matrix of the covariates in the observation coordinates. Default value is
   \eqn{n \times 1}{n x 1} matrix of \eqn{1} to adjust for the mean(intercept). }
@@ -63,7 +68,7 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
                    for exponential, Matern, spherical and Gaussian covariance function respectively. Default value is "exponential". }
 
   \item{search.type}{keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
-                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \code{"brute"} and \code{"tree"} provide the same result, though
+                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \cr \code{"brute"} and \code{"tree"} provide the same result, though
                      \code{"tree"} should be faster. \code{"cb"} implements fast code book search described in Ra and Kim (1993)
                      modified for NNGP. If locations do not have identical coordinate values on the axis used for the nearest neighbor
                      ordering (see \code{order} argument) then \code{"cb"} and \code{"brute"} should produce identical neighbor sets.
@@ -71,11 +76,14 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
                      and \code{"brute"} might produce different, but equally valid, neighbor sets, e.g., if data are on a grid.
                      Default value is \code{"tree"}. }
 
-  \item{stabilization}{When the spatial errors are generated from a very smooth covarince model (lower values of phi for spherical and Gaussian
+  \item{stabilization}{when the spatial errors are generated from a very smooth covarince model (lower values of phi for spherical and Gaussian
                       covariance and low phi and high nu for Matern covarinace), the estimation process may fail due to computational
                       instability. If \code{stabilization = TRUE}, performs stabilization by adding a white noise to the reordered data with
                       nugget \code{tau.sq = } \code{sigma.sq} * 1e-06. Estimation is performed on this new data with \code{nugget_status = 1}
                       (see \code{nugget_status} argument below). Default value is \code{TRUE} for \code{cov.model = "expoenential"} and \code{FALSE} otherwise. }
+
+  \item{pred.stabilization}{if not \code{NULL}, will truncate the estimated tau square to \code{pred.stabilization} * estimated sigma square.
+                            This provides additional stability in \cr \code{BRISC_prediction}. Default value is \eqn{1e-8}. }
 
   \item{verbose}{if \code{TRUE}, model specifications along with information regarding OpenMP support and progress of the algorithm
                  is printed to the screen. Otherwise, nothing is printed to the screen. Default value is \code{TRUE}. }
@@ -95,7 +103,7 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   \item{coords}{the matrix \code{coords[ord,]}. }
 
-  \item{y}{If \code{stabilization = FALSE}, returns the vector \code{y[ord]}. If \code{stabilization = TRUE}, returns \code{y[ord]} + used white noise in stabilization process. }
+  \item{y}{If \code{stabilization = FALSE}, returns the vector \code{y[ord]}. \cr If \code{stabilization = TRUE}, returns \code{y[ord]} + used white noise in stabilization process. }
 
   \item{X}{the matrix \code{x[ord,,drop=FALSE]}. }
 
@@ -105,7 +113,7 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   \item{eps}{value of used \code{eps} for approximate derivation. Default value is 2e-05. }
 
-  \item{init}{initial values of the parameters of the covariance model; accounts for \code{stabilization}. }
+  \item{init}{initial values of the parameters of the covariance model; \cr accounts for \code{stabilization}. }
 
   \item{Beta}{estimate of beta. }
 
@@ -114,7 +122,7 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
    \item{estimation.time}{time (in seconds) required to perform the model fitting after ordering and preprocessing data in \code{R},
                           reported using \code{proc.time()}. }
 
-  \item{BRISC_Object}{Object required for bootstrap and prediction. }
+  \item{BRISC_Object}{object required for bootstrap and prediction. }
 
 }
 
@@ -129,14 +137,15 @@ BRISC_estimation(coords, y, x = NULL, sigma.sq = 1, tau.sq = 0.1, phi = 1,
 
   Guinness, J. (2018) Permutation and Grouping Methods for
   Sharpening Gaussian Process Approximations, Technometrics,
-  DOI: 10.1080/00401706.2018.1437476, https://github.com/joeguinness/gp_reorder/tree/master/R .
+  DOI: 10.1080/00401706.2018.1437476, \cr
+  https://github.com/joeguinness/gp_reorder/tree/master/R .
 
   Vecchia, A. V. (1988) Estimation and model identification for
   continuous spatial processes. Journal of the Royal Statistical
   Society. Series B (Methodological), 297-312.
 
   Okazaki N. libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno
-  (L-BFGS), http://www.chokkan.org/software/liblbfgs/ .
+  (L-BFGS), \cr http://www.chokkan.org/software/liblbfgs/ .
 
   Andrew Finley, Abhirup Datta and Sudipto Banerjee (2020). spNNGP: Spatial Regression
   Models for Large Datasets using Nearest Neighbor Gaussian Processes. R package version 0.1.4.
@@ -182,8 +191,8 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
 estimation_result <- BRISC_estimation(coords, y, x)
-estimation_result$Theta ## Gives estimation of covariance model parameters.
-estimation_result$Beta ## Gives estimation of Beta
+estimation_result$Theta ##Estimates of covariance model parameters.
+estimation_result$Beta ##Estimates of Beta
 
 }
 

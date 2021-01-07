@@ -924,6 +924,9 @@ extern "C" {
     }
 
 
+
+
+
     SEXP BRISC_decorrelationcpp(SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP alphaSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                 SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP sim_r, SEXP sim_number_r, SEXP fix_nugget_r){
 

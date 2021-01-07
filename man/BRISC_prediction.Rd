@@ -7,16 +7,17 @@
   spatial regression models using Nearest Neighbor Gaussian Processes (NNGP) (Datta et al., 2016).
   BRISC_prediction  uses the parameter estimates from \code{BRISC_estimation} for the prediction. Some
   code blocks are borrowed from the R package: spNNGP: Spatial Regression Models for Large Datasets
-  using Nearest Neighbor Gaussian Processes https://CRAN.R-project.org/package=spNNGP .
+  using Nearest Neighbor Gaussian Processes \cr https://CRAN.R-project.org/package=spNNGP .
 }
 
 \usage{
-BRISC_prediction(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1, verbose = TRUE, tol = 12)
+BRISC_prediction(BRISC_Out, coords.0, X.0 = NULL, n_omp = 1,
+                 verbose = TRUE, tol = 12)
 }
 
 \arguments{
 
-  \item{BRISC_Out}{an object of class \code{BRISC_Out}, obtained as an output of \code{BRISC_estimation}. }
+  \item{BRISC_Out}{an object of class \code{BRISC_Out}, obtained as an output of \cr \code{BRISC_estimation}. }
 
   \item{coords.0}{the spatial coordinates corresponding to prediction locations. Its structure should be same as that of coords
                   in \code{BRISC_estimation}. Default value is a column of \eqn{1} to adjust for the mean (intercept). }
@@ -93,7 +94,8 @@ w <- rmvn(1, rep(0,n), sigma.sq*R)
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
 estimation_result <- BRISC_estimation(coords[1:400,], y[1:400], x[1:400,])
-prediction_result <- BRISC_prediction(estimation_result, coords[401:500,], x[401:500,])
+prediction_result <- BRISC_prediction(estimation_result,
+                                      coords[401:500,], x[401:500,])
 
 }
 

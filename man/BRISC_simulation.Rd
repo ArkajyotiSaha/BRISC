@@ -10,10 +10,14 @@
 }
 
 \usage{
-BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
-                 tau.sq = 0, phi = 1, nu = 1.5, n.neighbors = NULL,
-                 n_omp = 1, cov.model = "exponential", search.type = "tree",
-                 stabilization = NULL, verbose = TRUE, tol = 12)
+BRISC_simulation(coords, sim_number = 1,
+                 seeds =  NULL, sigma.sq = 1,
+                 tau.sq = 0, phi = 1, nu = 1.5,
+                 n.neighbors = NULL, n_omp = 1,
+                 cov.model = "exponential",
+                 search.type = "tree",
+                 stabilization = NULL,
+                 verbose = TRUE, tol = 12)
 }
 
 \arguments{
@@ -28,7 +32,7 @@ BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
 
   \item{sigma.sq}{value of sigma square. Default value is 1. }
 
-  \item{tau.sq}{value of tau square. Default value is 0. }
+  \item{tau.sq}{value of tau square. Default value is 0.1. }
 
   \item{phi}{value of phi. Default value is 1. }
 
@@ -44,7 +48,7 @@ BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
                    for exponential, Matern, spherical and Gaussian covariance function respectively. Default value is \code{"exponential"}. }
 
   \item{search.type}{keyword that specifies type of nearest neighbor search algorithm to be used. Supported keywords are:
-                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \code{"brute"} and \code{"tree"} provide the same result, though
+                     \code{"brute"}, \code{"tree"} and \code{"cb"}. \cr \code{"brute"} and \code{"tree"} provide the same result, though
                      \code{"tree"} should be faster. \code{"cb"} implements fast code book search described in Ra and Kim (1993)
                      modified for NNGP. If locations do not have identical coordinate values on the axis used for the nearest neighbor
                      ordering (see \code{order} argument) then \code{"cb"} and \code{"brute"} should produce identical neighbor sets.
@@ -80,7 +84,7 @@ BRISC_simulation(coords, sim_number = 1, seeds =  NULL, sigma.sq = 1,
   \item{output.data}{the \eqn{n \times sim_number} matrix of generated correlated data. Here \eqn{i^{th}} column
   denotes the data corresponding to the \eqn{i^{th}} simulation.  }
 
-  \item{time}{time (in seconds) required after preprocessing data in \code{R}, reported using,
+  \item{time}{time (in seconds) required after preprocessing data in \code{R}, \cr reported using,
                           \code{proc.time()}. }
 }
 
